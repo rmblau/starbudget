@@ -1,0 +1,11 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "budget",
+            "database": "${workspaceFolder:starlette-example}/budget.sql"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <body>
+    <h1>Transactions</h1>
+    <table class="table">
+    
+    <tr>
+        <th>Amount</th>
+        <th>Note</th>
+        <th>Date</th>
+    </tr>
+        <tr>
+        {% for transaction in page.object_list %}
+        <th scope="col">{{ transaction.amount }} </th>
+        <th scope="col">{{ transaction.note }} </th>
+        <th scope="col">{{ transaction.date }} </th>
+    </tr>
+    {% endfor%}
+    <tr>
+        <th scope="col">{{ sum }}</th>
+    </tr>
+</table>
+<div>
+{% if page.has_previous %}
+    <a class="button" href="?page=1">First</a>
+    <a class="button" href="?page={{ page.previous_page_number }}">Previous</a>
+{% endif %}
+</div>
+<div>Page {{ page.number }} of {{ paginator.num_pages }} - {{ paginator.count }} record{% if paginator.count != 1 %}s{% endif %}</div>
+<div>
+{% if page.has_next %}
+    <a class="button" href="?page={{ page.next_page_number }}">Next</a>
+    <a class="button" href="?page={{ paginator.num_pages }}">Last</a>
+{% endif %}
+</div>
+  </body>
+{% endblock %}
