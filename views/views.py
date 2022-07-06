@@ -11,7 +11,7 @@ from starlette.responses import RedirectResponse, HTMLResponse
 from starlette.authentication import requires
 from starlette_wtf import StarletteForm
 from starlette_core.paginator import Paginator
-from wtforms import TextField, DateField
+from wtforms import TextField, DateField, SelectField, DecimalField
 from wtforms.validators import DataRequired
 from budgeting.base import create_table
 templates = Jinja2Templates(directory='templates')
@@ -72,6 +72,22 @@ class CreateAccountForm(StarletteForm):
                                     validators=[DataRequired('Date')],
                                     format="%Y-%m-%d"
                                     )
+    categories = SelectField('SelectField', validators=[
+                             DataRequired('categories')])
+
+
+class CreateUserForm(StarletteForm):
+    name = TextField(
+        'Name of user',
+        validators=[
+            DataRequired('Name')
+        ]
+    )
+    categories = TextField(
+        'Category',
+        validators=[DataRequired('Note')]
+    )
+    balance = DecimalField('Balance', validators=[DataRequired("Balance")])
 
 
 async def homepage(request):
@@ -94,7 +110,6 @@ async def github_login(request):
 
 async def github_authorize(request):
     token = await github_oauth.github.authorize_access_token(request)
-    print(f'token is {token}')
     resp = await github_oauth.github.get('user', token=token)
     request.session['user'] = resp.json()
     return RedirectResponse(url='/transaction')
@@ -105,7 +120,6 @@ async def auth(request):
     print(f'token is :{token["id_token"]}')
     user = token.get('userinfo')
     if user:
-        await create_table()
         request.session['user'] = user
         return RedirectResponse(url='/transaction', headers={"Authorization": f"Bearer {token['id_token']}"})
     else:
@@ -126,6 +140,7 @@ async def logout(request):
 
 async def budget(request):
     user = request.session.get("user")
+    budget = Budget()
     print(user)
     if user is not None:
         if 'sub' in user:
@@ -141,25 +156,32 @@ async def budget(request):
 async def render_budget(request, user):
     budget = Budget()
     transaction = await budget.get_transaction(user_id=user)
+    categories = await budget.get_user_categories(user_id=user)
     sum_of_transacations = await budget.sum_of_transactions(user_id=user)
     paginator = Paginator(transaction, 10)  # Show 10 transactions per page
     page_number = request.query_params.get("page", 1)
     page = paginator.get_page(page_number)
     template = "budget.html"
     context = {"request": request, "paginator": paginator,
-               "page": page, "budget": budget, "sum": sum_of_transacations}
+               "page": page, "budget": budget, "sum": sum_of_transacations, "categories": categories}
 
     return template, context
 
 
 async def transaction_add(request):
     user = request.session.get("user")
+    budget = Budget()
     print(user)
     if 'sub' in user:
         env = Environment()
         env.loader = FileSystemLoader('./templates')
         template = env.get_template('add_transaction.html')
+        categories = await budget.get_user_categories(user['sub'])
         form = await CreateAccountForm.from_formdata(request)
+        if categories is not None:
+            form.categories.choices = [c.name for c in categories]
+        else:
+            form.categories.choices = "Test"
         html = template.render(form=form)
         return HTMLResponse(html)
     elif 'id' in user:
@@ -167,6 +189,28 @@ async def transaction_add(request):
         env.loader = FileSystemLoader('./templates')
         template = env.get_template('add_transaction.html')
         form = await CreateAccountForm.from_formdata(request)
+        html = template.render(form=form)
+        return HTMLResponse(html)
+    else:
+        return RedirectResponse("/login")
+
+
+async def index(request):
+    user = request.session.get("user")
+    budget = Budget()
+    print(user)
+    if 'sub' in user:
+        env = Environment()
+        env.loader = FileSystemLoader('./templates')
+        template = env.get_template('index.html')
+        form = await CreateUserForm.from_formdata(request)
+        html = template.render(form=form)
+        return HTMLResponse(html)
+    elif 'id' in user:
+        env = Environment()
+        env.loader = FileSystemLoader('./templates')
+        template = env.get_template('index.html')
+        form = await CreateUserForm.from_formdata(request)
         html = template.render(form=form)
         return HTMLResponse(html)
     else:
@@ -190,14 +234,38 @@ async def add_transaction(request):
                                      date_of_transaction=datetime.strptime(
                                          data['date_of_transaction'], "%Y-%m-%d"),
                                      user_id=user['sub'],
-                                     balance=await budget.set_balance(user['sub'], 100))
+                                     categories=None)
+
     elif 'id' in user:
         await budget.add_transaction(data['transaction'],
                                      note=data['note'],
                                      date_of_transaction=datetime.strptime(
                                          data['date_of_transaction'], "%Y-%m-%d"),
                                      user_id=user['id'],
-                                     balance=await budget.set_balance(user['sub'], 100))
+                                     categories=None
+                                     )
+    return RedirectResponse('/success')
+
+
+async def user_info(request):
+    user = request.session.get("user")
+    print(user)
+    data = await request.form()
+    budget = Budget()
+    if 'sub' in user:
+        await budget.create_user(data['name'],
+                                 user_id=user['sub'],
+                                 bank_balance=data['balance'],
+                                 categories=data['categories'])
+
+    elif 'id' in user:
+        await budget.add_transaction(data['transaction'],
+                                     note=data['note'],
+                                     date_of_transaction=datetime.strptime(
+                                         data['date_of_transaction'], "%Y-%m-%d"),
+                                     user_id=user['id'],
+                                     categories=data['categories']
+                                     )
     return RedirectResponse('/success')
 
 

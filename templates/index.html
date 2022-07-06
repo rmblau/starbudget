@@ -1,4 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
 
+<div class="border border-light p-3 mb-4">
+<div class="d-flex align-items-center justify-content-center">
+<form method="post" novalidate action="/create_user">
+  
+    <div class="form-group text-center">
+      {{ form.name(placeholder='First Last',
+                    autofocus='true',
+                    type='textfield',
+                    spellcheck='false') }}
+      {% if form.name.errors -%}
+      <span>{{ form.name.errors[0] }}</span>
+      {%- endif %}
+    </div>
+    <div class="form-group text-center">
+      {{ form.categories(placeholder="Bills") }}
+      {% if form.categories.errors -%}
+      <span>{{ form.categories.errors[0] }}</span>
+      {%- endif %}
+    </div>
+     <div class="form-group text-center">
+      {{ form.balance(placeholder="Balance") }}
+      {% if form.balance.errors -%}
+      <span>{{ form.balance.errors[0] }}</span>
+      {%- endif %}
+    </div>
+    <br></br>
+    <div class="text-center">
+    <button class="btn btn-outline-success me-2 text-center" type="submit">Submit transaction</button>
+    </div>
+  </form>
+</div>
+</div>
+
 {% endblock %}

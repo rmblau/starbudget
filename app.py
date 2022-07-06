@@ -27,12 +27,17 @@ routes = [
     Route("/response", views.add_transaction,
           name="response", methods=["POST"]),
     Route("/get_transactions", test.get_transactions, methods=["GET"]),
+    Route('/create_user', views.user_info, methods=["POST"]),
     Mount("/static", static, name="static")
 ]
 
 
+async def startup():
+    table = await create_table()
+    return table
 app = Starlette(debug=True,
                 routes=routes,
-                exception_handlers=views.exception_handlers
+                exception_handlers=views.exception_handlers,
+                on_startup=[startup],
                 )
 app.add_middleware(SessionMiddleware, secret_key="!secret")

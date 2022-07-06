@@ -3,8 +3,8 @@
         {
             "previewLimit": 50,
             "driver": "SQLite",
-            "name": "budget",
-            "database": "${workspaceFolder:starlette-example}/budget.sql"
+            "database": "budget.sql",
+            "name": "budget"
         }
     ],
     "sqltools.useNodeRuntime": true
