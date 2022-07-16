@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="card text-center">
+    <div class="card-body">
+      <h2>Update existing categories</h2>
+{% for category in categories %}
+  <div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle align-items-center" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" data-category= "{{ category }}">
+    {{ category }}
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+  <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-whatever="{{ category }}"data-bs-target="#renameModal" data-category="{{ category }}">Rename</a></li>
+  <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-whatever="{{ category }}"data-bs-target="#deleteModal" data-category="{{ category }}">Delete</a></li>
+  </ul>
+  </div>
+  <br></br>
+  {% endfor %}
+  </div>
+</div>
+
+  
+<!-- RenameModal -->
+<div class="modal fade" id="renameModal" tabindex="-1" aria-labelledby="renameModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="renameCategory"action="/category_response" method="post">
+        <label for="oldname" class="col-form-label">Old Name:</label>
+        <input type="text" class="form-control" name="oldname" id="oldname" value="" form="renameCategory"readonly>
+      <div class="modal-body">
+     <label for="newname" class="col-form-label">New Name:</label>
+      <input type="text" class="form-control" name="newname" id="newname" form="renameCategory">
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-success" type="submit" nme="btnRenameCategory" form="renameCategory">Update</button>
+    </div>
+    </form> 
+    </div>     
+  </div>
+</div>
+</div>
+</div>
+<script src=/static/js/renamemodal.js></script>
+
+{% endblock %}

@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block content %}
 
-<h3 class="text-center">Add new category</h3>
+{% block content %}
+<h3 class="text-center">Add Starting Balance</h3>
 <div class="border border-light p-3 mb-4">
 <div class="d-flex align-items-center justify-content-center">
 <form method="post" novalidate action="/create_category">
     <div class="form-group text-center">
-      {{ form.categories(placeholder="Category") }}
+      {{ form.categories(placeholder="Bills") }}
       {% if form.categories.errors -%}
       <span>{{ form.categories.errors[0] }}</span>
       {%- endif %}
@@ -18,5 +18,4 @@
   </form>
 </div>
 </div>
-
 {% endblock %}

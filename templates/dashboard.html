@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+<div class="col-md-12 text-center">
+<br></br>
+<button type="button" class="btn btn-outline-primary btn-block btn-lg" href="#" data-bs-toggle="modal" data-bs-whatever="expenseModal"data-bs-target="#expenseModal" data-category="expense">Add expense</button>
+</div><br></br>
+
+
+<div class="row gx-5 gy-5">
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Current Balance</h5>
+        <p class="card-text">{{ balance }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Total Expenses</h5>
+        <p class="card-text">{{ expenses }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Monthly Spend</h5>
+        <p class="card-text">Placeholder Value</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Income</h5>
+        <p class="card-text">Placeholder Value</p>
+      </div>
+    </div>
+  </div>
+</div>
+<br></br>
+<div class="row">
+<div class="card"> 
+<h4 class="card-title text-center">Last 5 transactions</h4>
+</div>
+</div>
+<div>
+<table class="table">
+    
+    <tr>
+        <th>Name</th>
+        <th>Amount</th>
+        <th>Category</th>
+    </tr>
+        <tr>
+        {% for name, amount, category in last_five %}
+         <th scope="col">{{ name }} </th>
+        <th scope="col">{{ amount }} </th>
+        <th scope="col">{{ category }} </th>
+    </tr>
+</div>
+</div>
+</div>
+
+<div class="modal fade" id="expenseModal" tabindex="-1" aria-labelledby="expenseModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Expense</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="/response">
+    <div class="form-group text-center">
+      {{ form.transaction(placeholder='$10',
+                    autofocus='true',
+                    type='textfield',
+                    spellcheck='false') }}
+      {% if form.transaction.errors -%}
+      <span>{{ form.transaction.errors[0] }}</span>
+      {%- endif %}
+    </div>
+    <div class="form-group text-center">
+      {{ form.note(placeholder="Burger King") }}
+      {% if form.note.errors -%}
+      <span>{{ form.note.errors[0] }}</span>
+      {%- endif %}
+    </div>
+    <div class="form-group text-center">
+      <label>Date: </label>
+      {{ form.date_of_transaction() }}
+      {% if form.date_of_transaction.errors -%}
+      <span>{{ form.date_of_transaction.errors[0] }}</span>
+      {%- endif %}
+    </div>
+    <div class="form-group text-center">
+      {{ form.categories }}
+      {% if form.categories.errors -%}
+      <span>{{ form.categories.errors[0] }}</span>
+      {%- endif %}
+    </div>
+    <br></br>
+    <div class="text-center">
+    <button class="btn btn-outline-success me-2 text-center" type="submit">Submit transaction</button>
+    </div>
+  </form>
+ </div>
+</div>
+</div>
+</div>
+</div>
+{% endfor %}
+{% endblock %}

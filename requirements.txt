@@ -2,3 +2,10 @@ aiofiles
 jinja2
 starlette
 uvicorn
+authlib
+WTForms
+starlette-wtf
+aiosqlite
+httpx
+git+https://github.com/accent-starlette/starlette-core.git@master#egg=starlette-core
+sqlalchemy

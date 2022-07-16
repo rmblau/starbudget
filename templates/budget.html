@@ -9,18 +9,37 @@
         <th>Amount</th>
         <th>Note</th>
         <th>Date</th>
+        <th>Categories</th>
     </tr>
         <tr>
         {% for transaction in page.object_list %}
         <th scope="col">{{ transaction.amount }} </th>
         <th scope="col">{{ transaction.note }} </th>
         <th scope="col">{{ transaction.date }} </th>
+        <th scope="col"> {{ transaction.categories }}</th>
     </tr>
     {% endfor%}
-    <tr>
-        <th scope="col">{{ sum }}</th>
-    </tr>
-</table>
+    </table>
+
+<div class="row">
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Total expenses</h5>
+        <p class="card-text">{{ sum }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Remaining Balance</h5>
+        <p class="card-text">{{ balance }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div>
 {% if page.has_previous %}
     <a class="button" href="?page=1">First</a>
@@ -34,5 +53,6 @@
     <a class="button" href="?page={{ paginator.num_pages }}">Last</a>
 {% endif %}
 </div>
+
   </body>
 {% endblock %}
