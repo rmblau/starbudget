@@ -1,6 +1,8 @@
 
 from datetime import datetime
-from .database import Users, Categories
+
+from psutil import users
+from budgeting.database import Users, Categories, Income
 from .base import Session
 from sqlalchemy import BigInteger, insert, select, update, insert
 
@@ -13,9 +15,16 @@ class User():
             await session.commit()
             return balance
 
+    async def add_income(self, user_id: BigInteger, amount: float):
+        async with Session() as session:
+            income_amount = Income(user_id, amount)
+            session.add(income_amount)
+            await session.commit()
+            return income_amount
+
     async def create_balance(self, user_id: BigInteger, balance: float):
         async with Session() as session:
-            balance = await session.execute(update(Users).values(user_id=user_id, bank_balance=balance))
+            balance = await session.execute(update(Users).where(Users.user_id == user_id).values(user_id=user_id, bank_balance=balance))
             await session.commit()
             return balance
 
@@ -25,16 +34,23 @@ class User():
             balance = bank_balance.scalar()
             return balance
 
+    async def get_user(self, user_id):
+        async with Session() as session:
+            user = await session.execute(select(Users.user_id).where(Users.user_id == user_id))
+            await session.commit()
+            return user.scalar_one_or_none()
+
     async def create_user(self, name, user_id, categories, bank_balance=None, first_login=True):
         async with Session() as session:
-            user = await session.execute(select(Users).where(Users.user_id == user_id))
-            users = user.scalars().all()
-            if users:
-                print("user exists")
-            else:
-                user = Users(name=name, user_id=user_id,
-                             bank_balance=bank_balance, categories=Categories(name=categories, user_id=user_id), first_login=first_login, last_login=datetime.utcnow())
-                session.add(user)
+            user = Users(name=name, user_id=user_id,
+                         bank_balance=bank_balance, categories=Categories(categories, user_id), first_login=first_login)
+            session.add(user)
+            await session.commit()
+        return
+
+    async def update_user(self, user_id, categories, bank_balance):
+        async with Session() as session:
+            user = await session.execute(update(Users).where(Users.user_id == user_id).values(categories=categories, bank_balance=bank_balance))
             await session.commit()
         return user
 

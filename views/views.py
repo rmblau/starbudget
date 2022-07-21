@@ -1,5 +1,4 @@
 from datetime import datetime
-from budgeting.budget import Budget
 from budgeting.transaction import Transactions
 from budgeting.categories import Categories
 from budgeting.user import User
@@ -9,7 +8,7 @@ from starlette.responses import HTMLResponse
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, HTMLResponse
 from starlette_core.paginator import Paginator
-from views.forms import CreateAccountForm, CreateUserForm, FirstLogin, UpdateCategories, BalanceForm, CreateCategories
+from views.forms import CreateAccountForm, CreateUserForm, FirstLogin, IncomeForm, UpdateCategories, BalanceForm, CreateCategories
 
 templates = Jinja2Templates(directory='templates')
 
@@ -20,21 +19,28 @@ async def homepage(request):
     return templates.TemplateResponse(template, context)
 
 
-async def index(request):
-    template = "index.html"
-    context = {"request": request}
-    return templates.TemplateResponse(template, context=context)
-
-
 async def first_login_response(request):
     user = User()
     category = Categories()
     session_user = request.session.get("user")
+
     data = await request.form()
     if 'sub' in session_user:
-        await user.create_balance(session_user['sub'], data['balance'])
+        first_login = user.get_first_login(session_user['sub'])
+        if first_login:
+            await user.create_user(name=session_user['name'], user_id=session_user['sub'], categories="Uncategorized", bank_balance=0.0)
+            await user.update_first_login(session_user['sub'])
+        else:
+            await user.update_user(user_id=session_user['sub'], categories="Uncategorized", bank_balance=0.0)
         await category.create_category(session_user['sub'], data['categories'])
+        await user.create_balance(session_user['sub'], data['balance'])
     if 'id' in session_user:
+        first_login = user.get_first_login(session_user['id'])
+        if first_login:
+            await user.create_user(name=session_user['name'], user_id=session_user['id'], categories="Uncategorized", bank_balance=0.0)
+            await user.update_first_login(session_user['id'])
+        else:
+            await user.update_user(user_id=session_user['id'], categories="Uncategorized", bank_balance=0.0)
         await user.create_balance(session_user['id'], data['balance'])
         await category.create_category(session_user['id'], data['category'])
     return RedirectResponse('/success')
@@ -55,7 +61,6 @@ async def budget(request):
 
 
 async def render_budget(request, user_id):
-    budget = Budget()
     user = User()
     category = Categories()
     transactions = Transactions()
@@ -70,14 +75,14 @@ async def render_budget(request, user_id):
     page = paginator.get_page(page_number)
     template = "budget.html"
     context = {"request": request, "paginator": paginator,
-               "page": page, "budget": budget, "sum": sum_of_transacations, "categories": [c.name for c in categories], "balance": balance}
+               "page": page, "budget": budget, "sum": sum_of_transacations,
+               "categories": [c.name for c in categories], "balance": balance}
 
     return template, context
 
 
 async def index(request):
     user = request.session.get("user")
-    budget = Budget()
     print(await budget.get_category_id(user['sub']))
     print(user)
     if 'sub' in user:
@@ -147,10 +152,10 @@ async def create_category(request):
     categories = Categories()
     user = request.session.get("user")
     data = await request.form()
-    print(data)
+    print(f'data from the form is {data}')
     if 'sub' in user:
-        reponse = await categories.create_category(user['sub'], data['categories'])
-        return RedirectResponse('/success')
+        reponse = await categories.create_category(user['sub'], data['category'])
+        return RedirectResponse('/categories')
     return RedirectResponse("/auth/login")
 
 
@@ -177,6 +182,20 @@ async def category_response(request):
     return RedirectResponse('/auth/login')
 
 
+async def delete_category(request):
+    category = Categories()
+
+    user = request.session.get("user")
+    print(user)
+    data = await request.form()
+
+    if 'sub' in user:
+        print(f'{data["oldname"]} will be deleted')
+        response = await category.delete_category(data['oldname'], user['sub'])
+        return RedirectResponse('/categories')
+    return RedirectResponse('/auth/login')
+
+
 async def create_category_form(request):
     session_user = request.session.get("user")
     data = await request.form()
@@ -198,12 +217,35 @@ async def balance(request):
             return HTMLResponse(html)
 
 
+async def income(request):
+    session_user = request.session.get("user")
+    if 'sub' in session_user:
+        env = Environment()
+        env.loader = FileSystemLoader('./templates')
+        template = env.get_template('income.html')
+        form = await IncomeForm.from_formdata(request)
+        if form.validate_on_submit():
+            html = template.render(form=form)
+            return HTMLResponse(html)
+    return RedirectResponse('/')
+
+
 async def balance_response(request):
     user = User()
     session_user = request.session.get("user")
     data = await request.form()
     if 'sub' in session_user:
         await user.create_balance(session_user['sub'], data['balance'])
+
+        return RedirectResponse('/success')
+
+
+async def income_response(request):
+    user = User()
+    session_user = request.session.get("user")
+    data = await request.form()
+    if 'sub' in session_user:
+        await user.add_income(session_user['sub'], data['income_amount'])
 
         return RedirectResponse('/success')
 
@@ -240,9 +282,9 @@ async def dashboard(request):
 async def first_login(request):
     template = 'first_login.html'
     form = await FirstLogin.from_formdata(request)
-    if form.validate_on_submit():
-        context = {"request": request, "form": form}
-        return templates.TemplateResponse(template, context)
+    await form.validate_on_submit()
+    context = {"request": request, "form": form}
+    return templates.TemplateResponse(template, context)
 
 
 async def error(request):

@@ -23,7 +23,7 @@
 </div>
 <br></br>
     <h1>Transactions</h1>
-    <table class="table" id="transaction-table">
+    <table class="table">
     
     <tr>
         <th>Amount</th>
@@ -60,7 +60,7 @@
   </body>
 
   <!--Edit Modal-->
-<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModal" aria-hidden="true">
+  <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModal" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -68,27 +68,15 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body text-center">
-        <form id="updateTransaction"action="/update_transaction" method="post">
-        <label for="oldname" class="col-form-label">Old Description:</label>
-        <input type="text" class="form-control" name="oldname" id="oldname" value="" form="updateTransaction"readonly required>
+        <form id="editTransaction"action="/transactions" method="post">
+        <label for="oldname" class="col-form-label">Old Name:</label>
+        <input type="text" class="form-control" name="oldname" id="oldname" value="" form="editTransaction"readonly>
       <div class="modal-body text-center">
-     <label for="newname" class="col-form-label">Description:</label>
-      <input type="text" class="form-control" name="newname" id="newname" form="updateTransaction">
-    </div>
-    <div class="modal-body text-center">
-     <label for="oldamount" class="col-form-label">Old Amount:</label>
-      <input type="text" class="form-control" name="oldamount" id="amount" form="updateTransaction">
-    </div>
-    <div class="modal-body text-center">
-     <label for="newamount" class="col-form-label">Amount:</label>
-      <input type="text" class="form-control" name="newamount" id="newamount" form="updateTransaction">
-    </div>
-    <div class="form-group">
-      <label for="date" class="col-form-label">Date:</label>
-      <input type="date" class="form-control" name="date" id="date" value="" form="updateExpense" required>
+     <label for="newname" class="col-form-label">New Name:</label>
+      <input type="text" class="form-control" name="newname" id="newname" form="editTransaction">
     </div>
     <div class="modal-footer">
-        <button class="btn btn-success" type="submit" name="btnRenameCategory" form="updateTransaction">Update</button>
+        <button class="btn btn-success" type="submit" name="btnEditTransaction" form="editTransaction">Update</button>
     </div>
     </form> 
     </div>     
@@ -96,11 +84,5 @@
 </div>
 </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity=
-"sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous">
-    </script>
-<script src=/static/js/deletemodal.js>
-</script>
+<script scr=/static/js/deletemodal.js></script>
 {% endblock %}

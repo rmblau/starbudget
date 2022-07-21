@@ -9,23 +9,23 @@ from sqlalchemy.types import BigInteger
 class Users(Base):
     __tablename__ = 'users'
 
-    id = Column(Integer, primary_key=True,
-                autoincrement=True)
+    id = Column(BigInteger, primary_key=True,
+                autoincrement=True, nullable=True)
     name = Column(String)
-    user_id = Column(BigInteger, unique=True)
+    user_id = Column(BigInteger)
     bank_balance = Column(Float)
     first_login = Column(Boolean)
+    last_login = Column(DateTime)
     transactions = relationship(
         "Transaction", back_populates="user", uselist=False, cascade="all")
-    categories = relationship(
-        "Categories", back_populates="user", uselist=False, cascade="all")
-
-    def __init__(self, name, user_id, bank_balance, categories, first_login):
+    categories = relationship("Categories", back_populates="user", uselist=False)
+    def __init__(self, name, user_id, categories, bank_balance, first_login, last_login):
         self.name = name
         self.user_id = user_id
-        self.bank_balance = bank_balance
         self.categories = categories
+        self.bank_balance = bank_balance
         self.first_login = first_login
+        self.last_login = last_login
 
 
 # class Budget(Base):
@@ -81,7 +81,7 @@ class Categories(Base):
     transaction = relationship(
         "Transaction", back_populates="category", uselist=False)
     user = relationship("Users", back_populates="categories",
-                        uselist=False, cascade="all")
+                        uselist= False, cascade="all")
 
     def __init__(self, name, user_id):
         self.name = name

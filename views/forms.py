@@ -67,9 +67,16 @@ class FirstLogin(StarletteForm):
 
 
 class BalanceForm(StarletteForm):
-    balance = StringField(
-        'Category Namet',
+    balance = DecimalField(
+        'Category Name',
         validators=[
             DataRequired('Amount')
         ]
+    )
+
+
+class IncomeForm(StarletteForm):
+    income_amount = DecimalField(
+        "Income",
+        validators=[DataRequired("Income Amount")]
     )

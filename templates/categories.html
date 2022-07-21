@@ -1,23 +1,53 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class="card text-center">
-    <div class="card-body">
-      <h2>Update existing categories</h2>
-{% for category in categories %}
-  <div class="dropdown">
-  <button class="btn btn-secondary dropdown-toggle align-items-center" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" data-category= "{{ category }}">
-    {{ category }}
+<h1 class="text-center">Manage Categories</h1>
+<br></br>
+<div class="row">
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Create a new spending category</h5>
+            <p>Categorize your common expenses to help track spending.</p>
+    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCategory" aria-expanded="false" aria-controls="collapseExample">
+    Create Category
+    </div>
   </button>
-  <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-  <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-whatever="{{ category }}"data-bs-target="#renameModal" data-category="{{ category }}">Rename</a></li>
-  <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-whatever="{{ category }}"data-bs-target="#deleteModal" data-category="{{ category }}">Delete</a></li>
-  </ul>
+    <div class="collapse" id="collapseCategory">
+     <form action="/create_category" id="createCategory" method="post" autocomplete="off">
+       <div class="form-group" form="createCategory">
+           <label class="col-form-label col-form-label-sm" for="name">Category Name</label>
+           <input class="form-control form-control-sm text-center w-30" type="text" name="category" id="name" form='createCategory' placeholder="e.g. Eating out" title="Please enter a name" maxlength="99" required>
+       </div>
+       <div>
+        <br></br>
+       <button type="submit" id="btnCreateCategory" name="btnCreateCategory" class="btn btn-success">Save</button>
+       </div>
+     </form>
+    </div>
+    </div>
   </div>
-  <br></br>
-  {% endfor %}
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+         <h2>Update existing categories</h2>
+            {% for category in categories %}
+            <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle align-items-center" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" data-category= "{{ category }}">
+              {{ category }}
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-whatever="{{ category }}"data-bs-target="#renameModal" data-category="{{ category }}">Rename</a></li>
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-whatever="{{ category }}" data-bs-target="#deleteModal" data-category="{{ category }}">Delete</a>
+            </ul>
+            </div>
+            <br></br>
+            {% endfor %}
+            </div>
+      </div>
+    </div>
   </div>
-</div>
+
 
   
 <!-- RenameModal -->
@@ -28,23 +58,49 @@
         <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body text-center">
         <form id="renameCategory"action="/category_response" method="post">
         <label for="oldname" class="col-form-label">Old Name:</label>
         <input type="text" class="form-control" name="oldname" id="oldname" value="" form="renameCategory"readonly>
-      <div class="modal-body">
+      <div class="modal-body text-center">
      <label for="newname" class="col-form-label">New Name:</label>
       <input type="text" class="form-control" name="newname" id="newname" form="renameCategory">
     </div>
     <div class="modal-footer">
-        <button class="btn btn-success" type="submit" nme="btnRenameCategory" form="renameCategory">Update</button>
+        <button class="btn btn-success" type="submit" name="btnRenameCategory" form="renameCategory">Update</button>
     </div>
     </form> 
     </div>     
   </div>
 </div>
 </div>
+
+<!-- Delete Modal-->
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal Delete title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="deleteCategory"action="/delete_category" method="post">
+        <input type="hidden" class="form-control" name="oldname" id="oldname" value="" form="deleteCategory"readonly>
+        <p class="text-danger"><strong>Are you sure you want to delete this category?</strong></p>
+            <ul class="text-danger" style="text-align:left">
+              <li class="text-danger small">The category will no longer be selectable in expenses</li>
+            </ul>
+    <div class="modal-footer">
+        <button class="btn btn-danger" type="submit" name="btnRenameCategory" form="deleteCategory">Delete</button>
+    </div>
+    </form> 
+    </div>     
+  </div>
 </div>
+</div>
+
 <script src=/static/js/renamemodal.js></script>
+
 
 {% endblock %}

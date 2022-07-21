@@ -1,5 +1,4 @@
 from datetime import datetime
-from budgeting.budget import Budget
 from budgeting.transaction import Transactions
 from budgeting.categories import Categories
 from budgeting.user import User

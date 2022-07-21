@@ -80,19 +80,17 @@ async def auth(request):
     print(f'token is :{token["id_token"]}')
     session_user = token.get('userinfo')
     if session_user:
-        user = User()
         request.session['user'] = session_user
         print(f'USER IS {session_user}')
         database_user = User()
-        new_user = await database_user.create_user(
-            name=session_user['name'], user_id=session_user['sub'], categories=None, bank_balance=0.0)
-        first_login = await database_user.get_first_login(
-            user_id=session_user['sub'])
-        print(await database_user.get_first_login(session_user['sub']))
-        if first_login:
-            await user.update_first_login(user_id=session_user['sub'])
-            return RedirectResponse(url='/first_login')
-        return RedirectResponse(url='/dashboard', headers={"Authorization": f"Bearer {token['id_token']}"})
+        existing_user = await database_user.get_user(session_user['sub'])
+        print(existing_user)
+        if existing_user:
+            return RedirectResponse("/dashboard")
+
+        else:
+            print("no user found, redirecting to first_login")
+            return RedirectResponse("/first_login")
     else:
 
         return RedirectResponse(url='/')

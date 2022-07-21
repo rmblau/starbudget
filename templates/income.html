@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3 class="text-center">Add Starting Balance</h3>
+<div class="border border-light p-3 mb-4">
+<div class="d-flex align-items-center justify-content-center">
+<form method="post" novalidate action="/income_response">
+    <div class="form-group text-center">
+      {{ form.income_amount(placeholder="Balance") }}
+      {% if form.income_amount.errors -%}
+      <span>{{ form.income_amount.errors[0] }}</span>
+      {%- endif %}
+    </div>
+    <br></br>
+    <div class="text-center">
+    <button class="btn btn-outline-success me-2 text-center" type="submit">Submit</button>
+    </div>
+  </form>
+</div>
+</div>
+{% endblock %}

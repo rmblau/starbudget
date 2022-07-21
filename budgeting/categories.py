@@ -1,6 +1,8 @@
 from datetime import date
 
 import sqlalchemy
+
+from budgeting.user import User
 from .database import Transaction, Categories as UserCategories, Users
 from .base import Session
 from sqlalchemy import BigInteger, insert, select, asc, func, update, insert, delete
@@ -11,8 +13,7 @@ class Categories():
 
     async def get_user_categories(self, user_id):
         async with Session() as session:
-            categories = await session.execute(select(UserCategories)
-                                               .join(Users))
+            categories = await session.execute(select(UserCategories).where(UserCategories.user_id == user_id))
             category = categories.scalars().all()
             await session.commit()
             return category
@@ -35,7 +36,6 @@ class Categories():
             return category_id.scalar()
 
     async def update_category_name(self, new_name, old_name, user_id):
-        # category_id = await self.get_category_id(user_id)
         async with Session() as session:
             category = await session.execute(update(UserCategories).values(name=new_name).where(UserCategories.user_id == user_id).where(UserCategories.name == old_name).execution_options(synchronize_session="fetch"))
             await session.commit()
@@ -43,6 +43,6 @@ class Categories():
 
     async def delete_category(self, name, user_id):
         async with Session() as session:
-            category = await session.execute(delete(Categories).where(Categories.name == name).where(Categories.user_id == user_id))
+            category = await session.execute(delete(UserCategories).where(UserCategories.name == name).where(UserCategories.user_id == user_id))
             await session.commit()
             return category
