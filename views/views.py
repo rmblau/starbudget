@@ -49,15 +49,17 @@ async def first_login_response(request):
 async def budget(request):
     user = request.session.get("user")
     print(user)
+    data = await request.form()
+    print(data)
     if user is not None:
         if 'sub' in user:
-            print(user)
             template, context = await render_budget(request, user['sub'])
             return templates.TemplateResponse(template, context=context)
         elif 'id' in user:
             template, context = await render_budget(request, user['id'])
             return templates.TemplateResponse(template, context=context)
-    return RedirectResponse("/auth/login")
+    elif user is None:
+        return RedirectResponse("/auth/login")
 
 
 async def render_budget(request, user_id):
@@ -79,6 +81,35 @@ async def render_budget(request, user_id):
                "categories": [c.name for c in categories], "balance": balance}
 
     return template, context
+
+
+async def update_or_delete_transaction(request):
+    session_user = request.session.get("user")
+    user = User()
+    transaction = Transactions()
+    print(user)
+    if session_user is not None:
+        if 'sub' in session_user:
+            data = await request.form()
+            old_date = datetime.strptime(data['olddate'], "%Y-%m-%d").date()
+            date = datetime.strptime(data['date'], "%Y-%m-%d").date()
+
+            print(date)
+            print(data)
+            print(f"submit time: {data['submitTime']}")
+            if 'btnUpdateTransaction' in data:
+                print(f"submitted time is {data['submitTime']}")
+                transaction_id = await transaction.get_transaction_id(session_user['sub'], data['oldamount'], data['oldname'], old_date, data['oldcategory'], data['submitTime'])
+                await transaction.edit_transaction(
+                    data['newamount'], data['newname'], date,
+                    session_user['sub'], transaction_id, data['category'], data['submitTime'])
+            elif 'btnDeleteTransaction' in data:
+                transaction_id = await transaction.get_transaction_id(session_user['sub'], data['oldamount'], data['oldname'], old_date, data['oldcategory'], data['submittime'])
+                await transaction.delete_transaction(
+                    session_user['sub'], transaction_id)
+                await user.update_balance(session_user['sub'], await transaction.sum_of_transactions(session_user['sub']))
+                await transaction.sum_of_transactions(session_user['sub'])
+            return RedirectResponse("/budget")
 
 
 async def index(request):
@@ -116,16 +147,21 @@ async def user_info(request):
     data = await request.form()
     transaction = Transactions()
     if 'sub' in user:
+        now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         await transaction.add_transaction(data['transacation'],
                                           note=data['note'],
                                           user_id=session_user['sub'],
-                                          categories=data['categories'])
+                                          categories=data['categories'],
+                                          date_of_transaction=datetime.strptime(
+                                              data['date_of_transaction'], "%Y-%m-%d-%H:%M:%S"),
+                                          date_added=datetime.strptime(
+                                              now, "%Y-%m-%d %H:%M:%S").date())
 
     elif 'id' in user:
         await transaction.add_transaction(data['transaction'],
                                           note=data['note'],
                                           date_of_transaction=datetime.strptime(
-            data['date_of_transaction'], "%Y-%m-%d"),
+            data['date_of_transaction'], "%Y-%m-%d-%H:%M:%S"),
             user_id=session_user['id'],
             categories=data['categories']
         )

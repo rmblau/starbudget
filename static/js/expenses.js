@@ -4,8 +4,11 @@ updateModal.addEventListener('show.bs.modal', function (event) {
     var button = event.relatedTarget
     //var category = button.dataset.category
     // Extract info from data-bs-* attributes
-    var category = button.getAttribute('data-bs-description')
+    var description = button.getAttribute('data-bs-description')
+    var category = button.getAttribute('data-bs-category')
+    var oldcategory = updateModal.querySelector('#oldcategory')
     var date = button.getAttribute('data-bs-date')
+    var submitTime = button.getAttribute('data-bs-submit-time')
     var amount = button.getAttribute('data-bs-amount')
     // If necessary, you could initiate an AJAX request here
     // and then do the updating in a callback.
@@ -14,9 +17,17 @@ updateModal.addEventListener('show.bs.modal', function (event) {
     var modalTitle = updateModal.querySelector('.modal-title')
     var modalBodyInput = updateModal.querySelector('.modal-body input')
     var dateInput = updateModal.querySelector('#date')
+    var oldDate = updateModal.querySelector('#olddate')
     var amountInput = updateModal.querySelector('#amount')
+    var categoryInput = updateModal.querySelector('#category')
+    var submitTimeInput = updateModal.querySelector('#submitTime').value = submitTime
+
     modalTitle.textContent = 'Update Expense ' + category
-    modalBodyInput.value = category
+    modalBodyInput.value = description
     dateInput.value = date
+    oldDate.value = date
     amountInput.value = amount
+    oldcategory.value = category
+    categoryInput.value = category
+    //submitTimeInput.value = submitTime
 })

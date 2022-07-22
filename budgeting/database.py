@@ -1,5 +1,6 @@
+from datetime import datetime
 from enum import unique
-from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, String, Integer, Date
+from sqlalchemy import DATETIME, Boolean, Column, DateTime, Float, ForeignKey, String, Integer, Date
 from sqlalchemy.orm import relationship
 
 from .base import Base
@@ -63,13 +64,15 @@ class Transaction(Base):
         "Categories", back_populates="transaction", uselist=False)
     categories = Column(String, ForeignKey(
         "categories.name", onupdate="cascade"))
+    date_added = Column(DateTime, default=datetime.utcnow)
 
-    def __init__(self, amount, note, date, user_id, categories) -> None:
+    def __init__(self, amount, note, date, user_id, categories, date_added) -> None:
         self.amount = amount
         self.note = note
         self.date = date
         self.user_id = user_id
         self.categories = categories
+        self.date_added = date_added
 
 
 class Categories(Base):

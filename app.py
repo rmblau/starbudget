@@ -17,6 +17,8 @@ routes = [
     Route("/budget", views.budget, name="budget", methods=["GET", "POST"]),
     Route("/transaction", transaction_view.transaction_add_form,
           name="transaction", methods=["GET", "POST"]),
+    Route("/update_or_delete_transaction", views.update_or_delete_transaction,
+          methods=['GET', 'POST']),
     Route("/success", views.success, name="success", methods=["GET", "POST"]),
     Route("/response", transaction_view.add_transaction_response,
           name="response", methods=["POST"]),

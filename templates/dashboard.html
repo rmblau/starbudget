@@ -13,7 +13,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form method="post" action="/response">
+        <form method="post" id="expenseForm" action="/response">
     <div class="form-group text-center">
       {{ form.transaction(placeholder='$10',
                     autofocus='true',
@@ -40,6 +40,12 @@
       {{ form.categories }}
       {% if form.categories.errors -%}
       <span>{{ form.categories.errors[0] }}</span>
+      {%- endif %}
+    </div>
+        <div class="form-group text-center">
+      {{ form.date_added }}
+      {% if form.date_added.errors -%}
+      <span>{{ form.date_added.errors[0] }}</span>
       {%- endif %}
     </div>
     <br></br>

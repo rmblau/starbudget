@@ -34,6 +34,12 @@ class User():
             balance = bank_balance.scalar()
             return balance
 
+    async def update_balance(self, user_id: BigInteger, balance: float):
+        async with Session() as session:
+            bank_balance = await session.execute(update(Users).values(bank_balance=balance).where(Users.user_id == user_id))
+            await session.commit()
+            return bank_balance
+
     async def get_user(self, user_id):
         async with Session() as session:
             user = await session.execute(select(Users.user_id).where(Users.user_id == user_id))

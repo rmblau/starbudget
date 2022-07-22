@@ -1,5 +1,5 @@
 from starlette_wtf import StarletteForm
-from wtforms import StringField, DateField, SelectField, DecimalField, FieldList, SubmitField
+from wtforms import StringField, DateField, SelectField, DecimalField, FieldList, SubmitField, HiddenField
 from wtforms.widgets import SubmitInput
 from wtforms.validators import DataRequired
 
@@ -21,6 +21,8 @@ class CreateAccountForm(StarletteForm):
                                     )
     categories = SelectField('SelectField', validators=[
                              DataRequired('categories')])
+    date_added = HiddenField(DateField('DatePicker', validators=[DataRequired('Date')
+                                                                 ], format="%Y-%m-%d %H:%M:%S"))
 
 
 class CreateUserForm(StarletteForm):

@@ -1,6 +1,3 @@
-from datetime import date
-
-import sqlalchemy
 
 from budgeting.user import User
 from .database import Transaction, Categories as UserCategories, Users
