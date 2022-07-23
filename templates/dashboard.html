@@ -9,12 +9,20 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Add expense</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form method="post" id="expenseForm" action="/response">
-    <div class="form-group text-center">
+        <div class="form-group text-center">
+          {{ form.recipient(placeholder="Burger King") }}
+          {% if form.recipient.errors -%}
+          <span>{{ form.recipient.errors[0] }}</span>
+          {%- endif %}
+        </div>
+    
+    
+      <div class="form-group text-center">
       {{ form.transaction(placeholder='$10',
                     autofocus='true',
                     type='textfield',
@@ -24,7 +32,7 @@
       {%- endif %}
     </div>
     <div class="form-group text-center">
-      {{ form.note(placeholder="Burger King") }}
+      {{ form.note(placeholder="Dinner for two") }}
       {% if form.note.errors -%}
       <span>{{ form.note.errors[0] }}</span>
       {%- endif %}
@@ -64,8 +72,13 @@
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Current Balance</h5>
-        {% if balance %}
-        <p class="card-text">{{ balance }}</p>
+        {% if income %}
+
+        {% set bank_balance = (balance|float + income|float) - expenses|float %}
+        <p class="card-text">{{ "%.2f"|format(bank_balance) }}</p>
+        {% elif income is none %}
+        {% set bank_balance = balance|float - expenses|float %}
+        <p class="card-text">{{ "%.2f"|format(bank_balance) }}</p>
         {% else %}
         <p class="card-text"><a href="/first_login">Update balance</a></p>
         {% endif %}
@@ -76,7 +89,7 @@
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Total Expenses</h5>
-        <p class="card-text">{{ expenses }}</p>
+        <p class="card-text">{{ "%.2f"|format(expenses) }}</p>
       </div>
     </div>
   </div>
