@@ -11,18 +11,18 @@ from sqlalchemy.orm import selectinload
 
 class Transactions():
 
-    async def add_transaction(self, amount: float, note: str, date_of_transaction: float, user_id: BigInteger, categories: Categories, date_added: datetime):
+    async def add_transaction(self, amount: float, recipient: str, note: str, date_of_transaction: float, user_id: BigInteger, categories: Categories, date_added: datetime):
         async with Session() as session:
             transaction = Transaction(
-                amount=amount, note=note, date=date_of_transaction, user_id=user_id, categories=categories, date_added=date_added)
+                amount=amount, recipient=recipient, note=note, date=date_of_transaction, user_id=user_id, categories=categories, date_added=date_added)
             session.add(transaction)
             await session.commit()
         return transaction
 
-    async def edit_transaction(self, amount: float, note: str, date_of_transactions: float, user_id: BigInteger, old_category_id: int, categories: str, submit_time: date):
+    async def edit_transaction(self, amount: float, recipient: str, note: str, date_of_transactions: float, user_id: BigInteger, old_category_id: int, categories: str, submit_time: date):
         async with Session() as session:
             now = datetime.utcnow()
-            updated_transaction = await session.execute(update(Transaction).values(amount=amount, note=note, date=date_of_transactions, user_id=user_id, categories=categories, date_added=now).where(Transaction.user_id == user_id).where(Transaction.id == old_category_id).where(Transaction.date_added == submit_time))
+            updated_transaction = await session.execute(update(Transaction).values(amount=amount, recipent=recipient, note=note, date=date_of_transactions, user_id=user_id, categories=categories, date_added=now).where(Transaction.user_id == user_id).where(Transaction.id == old_category_id).where(Transaction.date_added == submit_time))
             await session.commit()
         return updated_transaction
 
@@ -45,7 +45,7 @@ class Transactions():
 
     async def sum_of_transactions(self, user_id: BigInteger):
         async with Session() as session:
-            transaction = await session.execute(select(sqlalchemy.func.sum(Transaction.amount)).where(Transaction.user_id == user_id))
+            transaction = await session.execute(select(sqlalchemy.func.coalesce(sqlalchemy.func.sum(Transaction.amount), 0.00)).where(Transaction.user_id == user_id))
             transactions = transaction.scalar()
             return transactions
 

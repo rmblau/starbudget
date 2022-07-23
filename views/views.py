@@ -29,6 +29,7 @@ async def first_login_response(request):
         first_login = user.get_first_login(session_user['sub'])
         if first_login:
             await user.create_user(name=session_user['name'], user_id=session_user['sub'], categories="Uncategorized", bank_balance=0.0)
+            await user.add_income(session_user['sub'], amount=0.0)
             await user.update_first_login(session_user['sub'])
         else:
             await user.update_user(user_id=session_user['sub'], categories="Uncategorized", bank_balance=0.0)
@@ -43,7 +44,7 @@ async def first_login_response(request):
             await user.update_user(user_id=session_user['id'], categories="Uncategorized", bank_balance=0.0)
         await user.create_balance(session_user['id'], data['balance'])
         await category.create_category(session_user['id'], data['category'])
-    return RedirectResponse('/success')
+    return RedirectResponse('/dashboard')
 
 
 async def budget(request):
@@ -69,7 +70,13 @@ async def render_budget(request, user_id):
     transaction = await transactions.get_transaction(user_id=user_id)
     print([t.categories for t in transaction])
     categories = await category.get_user_categories(user_id=user_id)
+    income = await user.get_income(user_id)
     balance = await user.get_balance(user_id)
+    total_expenses = await transactions.sum_of_transactions(user_id)
+    print(f'balance before expenses is {balance}')
+    print(f'total expenses are {total_expenses}')
+    print(
+        f'balance = {(float(balance)- float(total_expenses))}')
     print(f'categories are {[c.name for c in categories]}')
     sum_of_transacations = await transactions.sum_of_transactions(user_id=user_id)
     paginator = Paginator(transaction, 10)  # Show 10 transactions per page
@@ -78,7 +85,9 @@ async def render_budget(request, user_id):
     template = "budget.html"
     context = {"request": request, "paginator": paginator,
                "page": page, "budget": budget, "sum": sum_of_transacations,
-               "categories": [c.name for c in categories], "balance": balance}
+               "categories": [c.name for c in categories],
+               "balance": balance, "expenses": total_expenses, "income": income
+               }
 
     return template, context
 
@@ -104,7 +113,7 @@ async def update_or_delete_transaction(request):
                     data['newamount'], data['newname'], date,
                     session_user['sub'], transaction_id, data['category'], data['submitTime'])
             elif 'btnDeleteTransaction' in data:
-                transaction_id = await transaction.get_transaction_id(session_user['sub'], data['oldamount'], data['oldname'], old_date, data['oldcategory'], data['submittime'])
+                transaction_id = await transaction.get_transaction_id(session_user['sub'], data['oldamount'], data['oldname'], old_date, data['oldcategory'], data['submitTime'])
                 await transaction.delete_transaction(
                     session_user['sub'], transaction_id)
                 await user.update_balance(session_user['sub'], await transaction.sum_of_transactions(session_user['sub']))
@@ -295,19 +304,20 @@ async def dashboard(request):
         user_balance = User()
         transactions = Transactions()
         category = Categories()
-        user = request.session.get("user")
+        # user = request.session.get("user")
         form = await CreateAccountForm.from_formdata(request)
-        categories = await category.get_user_categories(user['sub'])
+        categories = await category.get_user_categories(session_user['sub'])
         if categories is not None:
             form.categories.choices = [c.name for c in categories]
         else:
             form.categories.choices = ""
-        balance = await user_balance.get_balance(user['sub'])
-        total_expenses = await transactions.sum_of_transactions(user['sub'])
-        last_five_transaction_amounts = [t.amount for t in await transactions.last_five_transactions(user['sub'])]
-        last_five_names = [t.note for t in await transactions.last_five_transactions(user['sub'])]
-        last_five_categories = [t.categories for t in await transactions.last_five_transactions(user['sub'])]
-        context = {"request": request, "categories": categories,
+        income = await user_balance.get_income(session_user['sub'])
+        balance = await user_balance.get_balance(session_user['sub'])
+        total_expenses = await transactions.sum_of_transactions(session_user['sub'])
+        last_five_transaction_amounts = [t.amount for t in await transactions.last_five_transactions(session_user['sub'])]
+        last_five_names = [t.note for t in await transactions.last_five_transactions(session_user['sub'])]
+        last_five_categories = [t.categories for t in await transactions.last_five_transactions(session_user['sub'])]
+        context = {"request": request, "categories": categories, "income": income,
                    "balance": balance, "last_five": zip(last_five_names, last_five_transaction_amounts, last_five_categories),
                    "expenses": total_expenses, "form": form}
         return templates.TemplateResponse(template, context=context)

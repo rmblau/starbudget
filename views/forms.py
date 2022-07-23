@@ -5,11 +5,15 @@ from wtforms.validators import DataRequired
 
 
 class CreateAccountForm(StarletteForm):
-    transaction = StringField(
+    transaction = DecimalField(
         'Transaction amount',
         validators=[
             DataRequired('Amount')
         ]
+    )
+    recipient = StringField(
+        'Paid to',
+        validators=[DataRequired('Recipient')]
     )
     note = StringField(
         'Transaction notes',

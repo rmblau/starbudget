@@ -8,7 +8,7 @@
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Total expenses</h5>
-        <p class="card-text">{{ sum }}</p>
+        <p class="card-text">{{ "%.2f"|format(sum) }}</p>
       </div>
     </div>
   </div>
@@ -16,7 +16,15 @@
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Remaining Balance</h5>
-        <p class="card-text">{{ balance }}</p>
+        {% if income %}
+        {% set bank_balance = (balance|float + income|float) - expenses|float %}
+        <p class="card-text">{{ "%.2f"|format(bank_balance) }}</p>
+        {% elif income is none %}
+        {% set bank_balance = balance|float - expenses|float %}
+        <p class="card-text">{{ "%.2f"|format(bank_balance) }}</p>
+        {% else %}
+        <p class="card-text"><a href="/first_login">Update balance</a></p>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -26,17 +34,19 @@
     <table class="table" id="transaction-table">
     
     <tr>
+        <th>Recipient</th>
         <th>Amount</th>
         <th>Note</th>
-        <th>Date</th>
         <th>Categories</th>
+        <th>Date</th>
     </tr>
         <tr>
         {% for transaction in page.object_list %}
-        <th scope="col">{{ transaction.amount }} </th>
+        <th scope="col">{{  transaction.recipient }} </th>
+        <th scope="col">{{ "%.2f"|format(transaction.amount) }} </th>
         <th scope="col"><a href="#" data-bs-toggle="modal" data-bs-target="#updateModal" data-bs-description="{{ transaction.note }}" data-bs-category="{{ transaction.categories }}" data-bs-date="{{ transaction.date }}" ="{{ transaction.date_added }}" data-bs-submit-time="{{ transaction.date_added }}" data-bs-amount="{{ transaction.amount }}" >{{ transaction.note }}</a></th>
-        <th scope="col">{{ transaction.date }} </th>
         <th scope="col"> {{ transaction.categories }}</th>  
+        <th scope="col">{{ transaction.date }} </th>
     </tr>
     {% endfor%}
     </table>

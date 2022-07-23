@@ -22,6 +22,12 @@ class User():
             await session.commit()
             return income_amount
 
+    async def get_income(self, user_id: BigInteger):
+        async with Session() as session:
+            income = await session.execute(select(Income).where(Income.user_id == user_id))
+            await session.commit()
+            return income.scalar()
+
     async def create_balance(self, user_id: BigInteger, balance: float):
         async with Session() as session:
             balance = await session.execute(update(Users).where(Users.user_id == user_id).values(user_id=user_id, bank_balance=balance))

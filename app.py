@@ -31,7 +31,7 @@ routes = [
           methods=["GET", "POST"]),
     Route('/balance', views.balance, methods=["GET", "POST"]),
     Route('/update_balance', views.balance_response, methods=['POST']),
-    Route('/dashboard', views.dashboard, methods=["GET"]),
+    Route('/dashboard', views.dashboard, methods=["GET", "POST"]),
     Route('/first_login', views.first_login, methods=["GET", "POST"]),
     Route('/first_login_response',
           views.first_login_response, methods=["GET", "POST"]),

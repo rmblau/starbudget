@@ -50,12 +50,13 @@ class Income(Base):
 
 
 class Transaction(Base):
-    __tablename__ = 'budget'
+    __tablename__ = 'expenses'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(BigInteger, ForeignKey(
         "users.user_id", name="fk_user_id"))
     amount = Column(Float)
+    recipient = Column(String)
     note = Column(String)
     date = Column(Date)
     user = relationship("Users", back_populates="transactions",
@@ -66,8 +67,9 @@ class Transaction(Base):
         "categories.name", onupdate="cascade"))
     date_added = Column(DateTime, default=datetime.utcnow)
 
-    def __init__(self, amount, note, date, user_id, categories, date_added) -> None:
+    def __init__(self, amount, recipient, note, date, user_id, categories, date_added) -> None:
         self.amount = amount
+        self.recipient = recipient
         self.note = note
         self.date = date
         self.user_id = user_id
