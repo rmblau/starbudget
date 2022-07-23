@@ -1,7 +1,5 @@
 
 from datetime import datetime
-
-from psutil import users
 from budgeting.database import Users, Categories, Income
 from .base import Session
 from sqlalchemy import BigInteger, insert, select, update, insert
