@@ -11,3 +11,4 @@ asyncpg
 httpx
 git+https://github.com/accent-starlette/starlette-core.git@master#egg=starlette-core
 sqlalchemy
+psycopg2
