@@ -3,15 +3,14 @@
 Install and run:
 
 ```shell
-git clone https://github.com/encode/starlette-example.git
-cd starlette-example
-scripts/install
-scripts/run
+git clone git@github.com:rmblau/starbudget.git
+cd starbudget
+pip3 install -r requirements.txt
 ```
 
 Open `http://127.0.0.1:8000/` in your browser:
 
-![Homepage](https://raw.githubusercontent.com/encode/starlette-example/master/docs/index.png)
+![Homepage](https://github.com/rmblau/starbudget/blob/main/docs/startbudget-login.png)
 
 Navigate to path that is not routed, eg `http://127.0.0.1:8000/nope`:
 
