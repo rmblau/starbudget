@@ -2,10 +2,12 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from starlette.config import Config
 from sqlalchemy.sql.schema import MetaData
 import os
+config = Config(".env")
 engine = create_async_engine(
-    os.environ['DATABASE_URL'], echo=True,)
+    config.get('DATABASE_URL'), echo=True,)
 Session = sessionmaker(
     bind=engine, expire_on_commit=False, class_=AsyncSession)
 Base = declarative_base(class_registry=dict())

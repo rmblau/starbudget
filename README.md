@@ -1,4 +1,4 @@
-# An example Starlette application
+# StarBudget: Open Source Budgeting Application
 
 Install and run:
 

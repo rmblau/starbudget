@@ -87,6 +87,7 @@ class Categories(Base):
         "Transaction", back_populates="category", uselist=False)
     user = relationship("Users", back_populates="categories",
                         uselist=False, cascade="all")
+    balance = Column(Float)
 
     def __init__(self, name, user_id):
         self.name = name
