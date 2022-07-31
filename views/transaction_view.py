@@ -62,7 +62,7 @@ async def add_transaction_response(request):
         print(f'now is {now}')
         print(datetime.strptime(now, "%Y-%m-%d %H:%M:%S").date())
         print(await category.get_category_id(session_user['sub']))
-        await transaction.add_transaction(data['transaction'],
+        await transaction.add_transaction(amount=data['transaction'],
                                           recipient=data['recipient'],
                                           note=data['note'],
                                           date_of_transaction=datetime.strptime(

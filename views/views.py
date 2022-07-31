@@ -100,18 +100,17 @@ async def update_or_delete_transaction(request):
     if session_user is not None:
         if 'sub' in session_user:
             data = await request.form()
+            print(f'form data is {data}')
             old_date = datetime.strptime(data['olddate'], "%Y-%m-%d").date()
             date = datetime.strptime(data['date'], "%Y-%m-%d").date()
-
-            print(date)
-            print(data)
+            string_old_date = str(old_date)
             print(f"submit time: {data['submitTime']}")
             if 'btnUpdateTransaction' in data:
                 print(f"submitted time is {data['submitTime']}")
-                transaction_id = await transaction.get_transaction_id(session_user['sub'], data['oldamount'], data['oldname'], old_date, data['oldcategory'], data['submitTime'])
-                await transaction.edit_transaction(
-                    data['newamount'], data['newname'], date,
-                    session_user['sub'], transaction_id, data['category'], data['submitTime'])
+                transaction_id = await transaction.get_transaction_id(user_id=str(session_user['sub']), recipient=str(data['old_recipient']), amount=float(data['oldamount']), note=data['oldname'], date=old_date, category=str(data['oldcategory']), submit_time=data['submitTime'])
+                await transaction.edit_transaction(recipient=data['newrecipient'],
+                                                   amount=float(data['newamount']), note=data['newname'], date_of_transactions=date,
+                                                   user_id=session_user['sub'], old_category_id=transaction_id, categories=data['category'], submit_time=data['submitTime'])
             elif 'btnDeleteTransaction' in data:
                 transaction_id = await transaction.get_transaction_id(session_user['sub'], data['oldamount'], data['oldname'], datetime(old_date), data['oldcategory'], data['submitTime'])
                 await transaction.delete_transaction(

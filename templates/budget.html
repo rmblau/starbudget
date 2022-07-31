@@ -42,9 +42,9 @@
     </tr>
         <tr>
         {% for transaction in page.object_list %}
-        <th scope="col">{{  transaction.recipient }} </th>
-        <th scope="col">{{ "%.2f"|format(transaction.amount) }} </th>
-        <th scope="col"><a href="#" data-bs-toggle="modal" data-bs-target="#updateModal" data-bs-description="{{ transaction.note }}" data-bs-category="{{ transaction.categories }}" data-bs-date="{{ transaction.date }}" ="{{ transaction.date_added }}" data-bs-submit-time="{{ transaction.date_added }}" data-bs-amount="{{ transaction.amount }}" >{{ transaction.note }}</a></th>
+        <th scope="col"><a href="#" data-bs-toggle="modal" data-bs-target="#updateModal" data-bs-receipient="{{ transaction.recipient }}" data-bs-description="{{ transaction.note }}" data-bs-category="{{ transaction.categories }}" data-bs-date="{{ transaction.date }}" ="{{ transaction.date_added }}" data-bs-submit-time="{{ transaction.date_added }}" data-bs-amount="{{ transaction.amount }}" >{{ transaction.recipient }}</a></th>
+        <th scope="col">{{ "%.2f"|float(transaction.amount) }} </th>
+        <th scope="col">{{ transaction.note }}
         <th scope="col"> {{ transaction.categories }}</th>  
         <th scope="col">{{ transaction.date }} </th>
     </tr>
@@ -79,9 +79,17 @@
       </div>
       <div class="modal-body text-center">
         <form id="updateTransaction"action="/update_or_delete_transaction" method="post">
-        <label for="oldname" class="col-form-label"hidden>Old Description:</label>
+        <label for="old_recipient" class="col-form-label" hidden>Old Recipient:</label>
+        <input type="text" class="form-control" name="old_recipient" id="recipient" value="" form="updateTransaction"readonly required hidden>
+      <div class="modal-body text-center">
+        <form id="updateTransaction"action="/update_or_delete_transaction" method="post">
+        <label for="oldname" class="col-form-label" hidden>Old Description:</label>
         <input type="text" class="form-control" name="oldname" id="oldname" value="" form="updateTransaction"readonly required hidden>
       <div class="modal-body text-center">
+     <label for="newrecipient" class="col-form-label">Recipient:</label>
+      <input type="text" class="form-control" name="newrecipient" id="newrecipient" form="updateTransaction">
+    </div>
+        <div class="modal-body text-center">
      <label for="newname" class="col-form-label">Description:</label>
       <input type="text" class="form-control" name="newname" id="newname" form="updateTransaction">
     </div>
@@ -90,12 +98,12 @@
       <input type="text" class="form-control" name="oldamount" id="amount" form="updateTransaction" readonly required hidden>
     </div>
     <div class="form-group">
-      <label for="date" class="col-form-label" hidden>Old Date:</label>
+      <label for="date" class="col-form-label"hidden>Old Date:</label>
       <input type="date" class="form-control" name="olddate" id="olddate" value="" form="updateTransaction" required readonly hidden>
     </div>
       <div class="form-group">
       <label for="date" class="col-form-label" hidden>Submit Time:</label>
-      <input type="hidden" class="form-control" name="submitTime" id="submitTime" value="" form="updateTransaction" required readonly>
+      <input type="text" class="form-control" name="submitTime" id="submitTime" value="" form="updateTransaction" required readonly hidden>
     </div>
     <div class="form-group">
               <label for="oldcategory" class="col-form-label" hidden>Old Category:</label>
