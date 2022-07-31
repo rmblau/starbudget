@@ -19,7 +19,7 @@ services:
       - ./certbot/conf/:/etc/letsencrypt/:rw
     networks:
       - db
-    command: certonly --webroot --webroot-path /var/www/certbot/ -d starbudget.rmblau.com
+    command: certonly --webroot --webroot-path /var/www/certbot/ --email mrb1105@gmail.com --agree-tos -d starbudget.rmblau.com
   database:
     image: postgres:14
     restart: always
