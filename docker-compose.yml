@@ -1,19 +1,5 @@
 version: '3.5'
 services:
-  starbudget:
-    build: .
-    volumes:
-      - .:/app
-    env_file:
-      - .env
-    ports:
-      - 8000:8000
-    networks:
-      - db
-    restart: always
-    container_name: starbudget
-    command: uvicorn app:app --host 0.0.0.0 --port 8000 --ssl-keyfile /etc/nginx/ssl/live/starbudget.rmblau.com/privkey.pem --ssl-certfile /etc/nginx/ssl/live/starbudget.rmblau.com/fullchain.pem
-
   nginx:
     image: nginx:latest
     ports:
@@ -43,6 +29,19 @@ services:
     networks:
       - db
     container_name: db
+  starbudget:
+    build: .
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    ports:
+      - 8000:8000
+    networks:
+      - db
+    restart: always
+    container_name: starbudget
+    command: uvicorn app:app --host 0.0.0.0 --port 8000 --ssl-keyfile /etc/nginx/ssl/live/starbudget.rmblau.com/privkey.pem --ssl-certfile /etc/nginx/ssl/live/starbudget.rmblau.com/fullchain.pem
 
 networks:
   db: null
