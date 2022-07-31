@@ -11,14 +11,6 @@ services:
       - ./certbot/www:/var/www/certbot/:ro
       - ./certbot/conf/:/etc/nginx/ssl/:ro
 
-  certbot:
-    image: certbot/certbot:latest
-    command: certonly --webroot --webroot-path=/var/www/certbot --email mrb1105@gmail.com --agree-tos --no-eff-email -d starbudget.rmblau.com -d www.starbudget.rmblau.com
-    volumes:
-      - ./certbot/www/:/var/www/certbot/:rw
-      - ./certbot/conf/:/etc/letsencrypt/:rw
-    restart: always
-
   database:
     image: postgres:14
     restart: always
