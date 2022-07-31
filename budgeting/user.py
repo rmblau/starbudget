@@ -46,7 +46,7 @@ class User():
 
     async def get_user(self, user_id):
         async with Session() as session:
-            user = await session.execute(select(Users.user_id).where(Users.user_id == user_id))
+            user = await session.execute(select(Users.user_id).where(Users.user_id == BigInteger(user_id)))
             await session.commit()
             return user.scalar_one_or_none()
 
