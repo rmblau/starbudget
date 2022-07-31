@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from this import d
 
 import sqlalchemy
 
@@ -40,6 +41,8 @@ class Transactions():
 
     async def get_transaction_id(self, user_id, amount: float, note: str, date: datetime, category: Categories, submit_time: datetime):
         async with Session() as session:
+            print(type(date))
+            print(type(Transaction.date))
             transaction_id = await session.execute(select(Transaction.id).where(Transaction.user_id == user_id).where(Transaction.amount == float(amount)).where(Transaction.date == date).where(Transaction.categories == category).where(Transaction.note == note).where(Transaction.date_added == datetime(submit_time)))
             return transaction_id.scalar_one_or_none()
 
