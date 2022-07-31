@@ -11,7 +11,15 @@ services:
       - ./certbot/www:/var/www/certbot/:ro
       - ./certbot/conf/:/etc/nginx/ssl/:ro
     networks:
-    - db
+      - db
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
+    networks:
+      - db
+    command: certbot certonly --webroot --webroot-path /var/www/certbot/ -d starbudget.rmblau.com
   database:
     image: postgres:14
     restart: always
@@ -36,7 +44,7 @@ services:
       - db
     restart: always
     container_name: starbudget
-    command: uvicorn app:app --host 0.0.0.0 --port 8000 --proxy-headers
+    command: uvicorn app:app --host 0.0.0.0 --port 8000 --proxy-headers --ssl-keyfile /etc/nginx/ssl/live/starbudget.rmblau.com/privkey.pem --ssl-certfile /etc/nginx/ssl/live/starbudget.rmblau.com/fullchain.pem
 
 networks:
   db: null
