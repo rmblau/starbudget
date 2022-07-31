@@ -38,7 +38,7 @@ services:
     env_file:
       - .env
     volumes:
-      - database-data:/var/lib/postgresql/data/
+      - ./database-data:/var/lib/postgresql/data/
     networks:
       - db
     container_name: db
