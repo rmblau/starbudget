@@ -53,4 +53,4 @@ app.add_middleware(SessionMiddleware, secret_key="!secret", max_age=None)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000,
-                ssl_keyfile="./localhost+3-key.pem", ssl_certfile="./localhost+3.pem")
+                ssl_keyfile="/etc/letsencrypt/live/starbudget.rmblau.com/privkey.pem", ssl_certfile="/etc/letsencrypt/live/starbudget.rmblau.com/fullchain.pem", proxy_headers=True)
