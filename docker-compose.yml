@@ -19,7 +19,7 @@ services:
       - ./certbot/conf/:/etc/letsencrypt/:rw
     networks:
       - db
-    command: certonly --webroot --webroot-path /var/www/certbot/ --email mrb1105@gmail.com --agree-tos --dry-run-d starbudget.rmblau.com
+    command: certonly --webroot --webroot-path /var/www/certbot/ --email mrb1105@gmail.com --agree-tos --dry-run -d  starbudget.rmblau.com
   database:
     image: postgres:14
     restart: always
@@ -36,6 +36,7 @@ services:
     build: .
     volumes:
       - .:/app
+      - ./certbot/conf/:/etc/starbudget/:rw
     env_file:
       - .env
     ports:
