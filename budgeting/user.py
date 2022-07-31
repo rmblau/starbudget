@@ -60,7 +60,7 @@ class User():
 
     async def update_user(self, user_id, categories, bank_balance):
         async with Session() as session:
-            user = await session.execute(update(Users).where(Users.user_id == user_id).values(categories=categories, bank_balance=bank_balance))
+            user = await session.execute(update(Users).where(Users.user_id == user_id).values(categories=categories, bank_balance=float(bank_balance)))
             await session.commit()
         return user
 
