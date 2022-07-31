@@ -101,7 +101,7 @@ async def update_or_delete_transaction(request):
         if 'sub' in session_user:
             data = await request.form()
             print(f'form data is {data}')
-            old_date = datetime.strptime(data['olddate'], "%Y-%m-%d").date()
+            old_date = datetime.strptime(data['olddate'], "%Y-%m-%d")
             date = datetime.strptime(data['date'], "%Y-%m-%d").date()
             print(f"submit time: {data['submitTime']}")
             if 'btnUpdateTransaction' in data:

@@ -58,7 +58,7 @@ class Transaction(Base):
     amount = Column(Float)
     recipient = Column(String)
     note = Column(String)
-    date = Column(Date)
+    date = Column(DateTime)
     user = relationship("Users", back_populates="transactions",
                         uselist=False, cascade="all")
     category = relationship(
