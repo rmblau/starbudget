@@ -40,7 +40,7 @@ class Transactions():
 
     async def get_transaction_id(self, user_id, amount: float, note: str, date: datetime, category: Categories, submit_time: datetime):
         async with Session() as session:
-            transaction_id = await session.execute(select(Transaction.id).where(Transaction.user_id == user_id).where(Transaction.amount == float(amount)).where(Transaction.date == float(date)).where(Transaction.categories == category).where(Transaction.note == note).where(Transaction.date_added == datetime(submit_time)))
+            transaction_id = await session.execute(select(Transaction.id).where(Transaction.user_id == user_id).where(Transaction.amount == float(amount)).where(Transaction.date == datetime.date(date)).where(Transaction.categories == category).where(Transaction.note == note).where(Transaction.date_added == datetime(submit_time)))
             return transaction_id.scalar_one_or_none()
 
     async def sum_of_transactions(self, user_id):
