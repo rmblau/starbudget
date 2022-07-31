@@ -10,12 +10,15 @@ services:
       - ./nginx/conf/:/etc/nginx/conf.d/:ro
       - ./certbot/www:/var/www/certbot/:ro
       - ./certbot/conf/:/etc/nginx/ssl/:ro
-
+    networks:
+    - db
   database:
     image: postgres:14
     restart: always
     env_file:
       - .env
+    ports:
+      - 5432:5432
     volumes:
       - ./database-data:/var/lib/postgresql/data/
     networks:
@@ -33,7 +36,7 @@ services:
       - db
     restart: always
     container_name: starbudget
-    command: uvicorn app:app --host 0.0.0.0 --port 8000 --ssl-keyfile /etc/nginx/ssl/live/starbudget.rmblau.com/privkey.pem --ssl-certfile /etc/nginx/ssl/live/starbudget.rmblau.com/fullchain.pem
+    command: uvicorn app:app --host 0.0.0.0 --port 8000 --proxy-headers
 
 networks:
   db: null
