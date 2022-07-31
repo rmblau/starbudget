@@ -1,5 +1,7 @@
 from datetime import datetime
+from sqlalchemy.dialects.postgresql import TIME
 from enum import unique
+from h11 import Data
 from sqlalchemy import DATETIME, Boolean, Column, DateTime, Float, ForeignKey, String, Integer, Date
 from sqlalchemy.orm import relationship
 
@@ -65,7 +67,8 @@ class Transaction(Base):
         "Categories", back_populates="transaction", uselist=False)
     categories = Column(String, ForeignKey(
         "categories.name", onupdate="cascade"))
-    date_added = Column(DateTime, default=datetime.utcnow)
+    date_added = Column(
+        TIME(precision=10))
 
     def __init__(self, amount, recipient, note, date, user_id, categories, date_added) -> None:
         self.amount = amount
