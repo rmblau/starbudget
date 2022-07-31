@@ -13,7 +13,7 @@ class Users(Base):
     id = Column(Integer, primary_key=True,
                 autoincrement=True)
     name = Column(String)
-    user_id = Column(BigInteger, unique=True)
+    user_id = Column(String, unique=True)
     bank_balance = Column(Float)
     first_login = Column(Boolean)
     transactions = relationship(
@@ -53,7 +53,7 @@ class Transaction(Base):
     __tablename__ = 'expenses'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(BigInteger, ForeignKey(
+    user_id = Column(String, ForeignKey(
         "users.user_id", name="fk_user_id"))
     amount = Column(Float)
     recipient = Column(String)
@@ -82,7 +82,7 @@ class Categories(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, unique=True)
-    user_id = Column(BigInteger, ForeignKey("users.user_id"))
+    user_id = Column(String, ForeignKey("users.user_id"))
     transaction = relationship(
         "Transaction", back_populates="category", uselist=False)
     user = relationship("Users", back_populates="categories",
