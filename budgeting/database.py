@@ -40,7 +40,7 @@ class Income(Base):
     __tablename__ = 'income'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(BigInteger, ForeignKey(
+    user_id = Column(String, ForeignKey(
         "users.user_id", name="fk_user_id"))
     amount = Column(Float)
 
