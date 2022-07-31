@@ -28,7 +28,7 @@ class User():
 
     async def create_balance(self, user_id: BigInteger, balance: float):
         async with Session() as session:
-            balance = await session.execute(update(Users).where(Users.user_id == user_id).values(user_id=user_id, bank_balance=balance))
+            balance = await session.execute(update(Users).where(Users.user_id == user_id).values(user_id=BigInteger(user_id), bank_balance=balance))
             await session.commit()
             return balance
 
