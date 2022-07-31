@@ -113,7 +113,7 @@ async def update_or_delete_transaction(request):
                     data['newamount'], data['newname'], date,
                     session_user['sub'], transaction_id, data['category'], data['submitTime'])
             elif 'btnDeleteTransaction' in data:
-                transaction_id = await transaction.get_transaction_id(session_user['sub'], data['oldamount'], data['oldname'], old_date, data['oldcategory'], data['submitTime'])
+                transaction_id = await transaction.get_transaction_id(session_user['sub'], data['oldamount'], data['oldname'], datetime(old_date), data['oldcategory'], data['submitTime'])
                 await transaction.delete_transaction(
                     session_user['sub'], transaction_id)
                 await user.update_balance(session_user['sub'], await transaction.sum_of_transactions(session_user['sub']))
