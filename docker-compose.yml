@@ -19,7 +19,7 @@ services:
       - ./certbot/conf/:/etc/letsencrypt/:rw
     networks:
       - db
-    command: certonly --webroot --webroot-path /var/www/certbot/ --email mrb1105@gmail.com --agree-tos -d starbudget.rmblau.com
+    command: certonly --webroot --webroot-path /var/www/certbot/ --email mrb1105@gmail.com --agree-tos --dry-run-d starbudget.rmblau.com
   database:
     image: postgres:14
     restart: always
@@ -46,7 +46,7 @@ services:
     container_name: starbudget
     depends_on:
       - certbot
-    command: uvicorn app:app --host 0.0.0.0 --port 8000 --proxy-headers --ssl-keyfile /etc/nginx/ssl/live/starbudget.rmblau.com/privkey.pem --ssl-certfile /etc/nginx/ssl/live/starbudget.rmblau.com/fullchain.pem
+    command: uvicorn app:app --host 0.0.0.0 --port 8000 --proxy-headers --ssl-keyfile /etc/starbudget/ssl/live/starbudget.rmblau.com/privkey.pem --ssl-certfile /etc/starbudget/ssl/live/starbudget.rmblau.com/fullchain.pem
 
 networks:
   db: null
