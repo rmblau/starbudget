@@ -32,7 +32,7 @@ services:
     networks:
       - db
     container_name: db
-  starbudget:
+  starbudget.rmblau.com:
     build: .
     volumes:
       - .:/app
