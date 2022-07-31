@@ -20,8 +20,6 @@ services:
       - 80:80
       - 443:443
     restart: always
-    build:
-      network: host
     volumes:
       - ./nginx/conf/:/etc/nginx/conf.d/:ro
       - ./certbot/www:/var/www/certbot/:ro
@@ -29,6 +27,7 @@ services:
 
   certbot:
     image: certbot/certbot:latest
+    command: certonly --webroot --webroot-path=/var/www/certbot --email mrb1105@gmail.com --agree-tos --no-eff-email -d starbudget.rmblau.com -d www.starbudget.rmblau.com
     volumes:
       - ./certbot/www/:/var/www/certbot/:rw
       - ./certbot/conf/:/etc/letsencrypt/:rw
