@@ -106,7 +106,7 @@ async def update_or_delete_transaction(request):
             old_date = datetime.strptime(
                 data['olddate'], "%Y-%m-%d").date()
             submit_time = datetime.strptime(
-                data['submitTime'], "%Y-%m-%d %H:%M:%S.%f").date()
+                data['submitTime'], "%Y-%m-%d %H:%M:%S.%f")
             print(type(old_date))
             print(submit_time)
             date = datetime.strptime(
