@@ -115,13 +115,13 @@ async def update_or_delete_transaction(request):
             print(f"submit time: {data['submitTime']}")
             if 'btnUpdateTransaction' in data:
                 print(f"submitted time is {data['submitTime']}")
-                transaction_id = await transaction.get_transaction_id(user_id=str(session_user['sub']), recipient=str(data['old_recipient']), amount=float(data['oldamount']), note=data['oldname'], date=datetime(date.strftime("%Y-%m-%d")), category=str(data['oldcategory']), submit_time=data['submitTime'])
+                transaction_id = await transaction.get_transaction_id(user_id=str(session_user['sub']), recipient=str(data['old_recipient']), amount=float(data['oldamount']), note=data['oldname'], date=int(date.strftime("%Y%m%d")), category=str(data['oldcategory']), submit_time=data['submitTime'])
                 await transaction.edit_transaction(recipient=data['newrecipient'],
                                                    amount=float(data['newamount']), note=data['newname'], date_of_transactions=date,
-                                                   user_id=session_user['sub'], old_category_id=transaction_id, categories=data['category'], submit_time=submit_time))
+                                                   user_id=session_user['sub'], old_category_id=transaction_id, categories=data['category'], submit_time=submit_time)
             elif 'btnDeleteTransaction' in data:
                 print(data['submitTime'])
-                transaction_id=await transaction.get_transaction_id(user_id = session_user['sub'], recipient = data['old_recipient'], amount = data['oldamount'], note = data['oldname'], date = old_date, category = data['oldcategory'], submit_time = data['submitTime'])
+                transaction_id = await transaction.get_transaction_id(user_id=session_user['sub'], recipient=data['old_recipient'], amount=data['oldamount'], note=data['oldname'], date=old_date, category=data['oldcategory'], submit_time=data['submitTime'])
                 await transaction.delete_transaction(
                     session_user['sub'], transaction_id)
                 await user.update_balance(session_user['sub'], await transaction.sum_of_transactions(session_user['sub']))
@@ -130,163 +130,163 @@ async def update_or_delete_transaction(request):
 
 
 async def index(request):
-    user=request.session.get("user")
+    user = request.session.get("user")
     print(await budget.get_category_id(user['sub']))
     print(user)
     if 'sub' in user:
-        env=Environment()
-        env.loader=FileSystemLoader('./templates')
-        template=env.get_template('index.html')
-        form=await CreateUserForm.from_formdata(request)
-        html=template.render(form = form)
+        env = Environment()
+        env.loader = FileSystemLoader('./templates')
+        template = env.get_template('index.html')
+        form = await CreateUserForm.from_formdata(request)
+        html = template.render(form=form)
         return HTMLResponse(html)
     elif 'id' in user:
-        env=Environment()
-        env.loader=FileSystemLoader('./templates')
-        template=env.get_template('index.html')
-        form=await CreateUserForm.from_formdata(request)
-        html=template.render(form = form)
+        env = Environment()
+        env.loader = FileSystemLoader('./templates')
+        template = env.get_template('index.html')
+        form = await CreateUserForm.from_formdata(request)
+        html = template.render(form=form)
         return HTMLResponse(html)
     else:
         return RedirectResponse("auth/login")
 
 
 async def success(request):
-    template='response.html'
-    context={"request": request}
+    template = 'response.html'
+    context = {"request": request}
     return templates.TemplateResponse(template, context)
 
 
 async def user_info(request):
-    session_user=request.session.get("user")
-    user=User()
+    session_user = request.session.get("user")
+    user = User()
     print(f'user is {session_user}')
-    data=await request.form()
-    transaction=Transactions()
+    data = await request.form()
+    transaction = Transactions()
     if 'sub' in user:
-        now=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         await transaction.add_transaction(data['transacation'],
-                                          note = data['note'],
-                                          user_id = session_user['sub'],
-                                          categories = data['categories'],
-                                          date_of_transaction = datetime.strptime(
+                                          note=data['note'],
+                                          user_id=session_user['sub'],
+                                          categories=data['categories'],
+                                          date_of_transaction=datetime.strptime(
                                               data['date_of_transaction'], "%Y-%m-%d-%H:%M:%S"),
-                                          date_added = datetime.strptime(
+                                          date_added=datetime.strptime(
                                               now, "%Y-%m-%d %H:%M:%S").date())
 
     elif 'id' in user:
         await transaction.add_transaction(data['transaction'],
-                                          note = data['note'],
-                                          date_of_transaction = datetime.strptime(
+                                          note=data['note'],
+                                          date_of_transaction=datetime.strptime(
             data['date_of_transaction'], "%Y-%m-%d-%H:%M:%S"),
-            user_id = session_user['id'],
-            categories = data['categories']
+            user_id=session_user['id'],
+            categories=data['categories']
         )
     return RedirectResponse('/success')
 
 
 async def categories(request):
-    user=request.session.get("user")
-    category=Categories()
-    categories=await category.get_user_categories(user['sub'])
-    template="categories.html"
+    user = request.session.get("user")
+    category = Categories()
+    categories = await category.get_user_categories(user['sub'])
+    template = "categories.html"
     if 'sub' in user:
-        env=Environment()
-        env.loader=FileSystemLoader('./templates')
-        template=env.get_template('categories.html')
-        categories=await category.get_user_categories(user['sub'])
-        form=await UpdateCategories.from_formdata(request)
-        context={"request": request, "categories": [
+        env = Environment()
+        env.loader = FileSystemLoader('./templates')
+        template = env.get_template('categories.html')
+        categories = await category.get_user_categories(user['sub'])
+        form = await UpdateCategories.from_formdata(request)
+        context = {"request": request, "categories": [
             c.name for c in categories], "form": form}
-        return templates.TemplateResponse(template, context = context)
+        return templates.TemplateResponse(template, context=context)
 
 
 async def create_category(request):
-    categories=Categories()
-    user=request.session.get("user")
-    data=await request.form()
+    categories = Categories()
+    user = request.session.get("user")
+    data = await request.form()
     print(f'data from the form is {data}')
     if 'sub' in user:
-        reponse=await categories.create_category(user['sub'], data['category'])
+        reponse = await categories.create_category(user['sub'], data['category'])
         return RedirectResponse('/categories')
     return RedirectResponse("/auth/login")
 
 
 async def category_response(request):
-    category=Categories()
+    category = Categories()
 
-    user=request.session.get("user")
+    user = request.session.get("user")
     print(f'request is {await request.form()}')
-    button_click=request.get("data", False)
+    button_click = request.get("data", False)
     print(f'button clicked is {button_click}')
     print(user)
-    data=await request.form()
+    data = await request.form()
 
     if 'sub' in user:
         if 'btnrenameCategory' in data:
             print('rename found')
         else:
             print("Not found")
-        user_categories=[c.name for c in await category.get_user_categories(user['sub'])]
+        user_categories = [c.name for c in await category.get_user_categories(user['sub'])]
         print(f'data is {data}')
         print(user_categories)
-        response=await category.update_category_name(data['newname'], data['oldname'], user['sub'])
+        response = await category.update_category_name(data['newname'], data['oldname'], user['sub'])
         return RedirectResponse('/categories')
     return RedirectResponse('/auth/login')
 
 
 async def delete_category(request):
-    category=Categories()
+    category = Categories()
 
-    user=request.session.get("user")
+    user = request.session.get("user")
     print(user)
-    data=await request.form()
+    data = await request.form()
 
     if 'sub' in user:
         print(f'{data["oldname"]} will be deleted')
-        response=await category.delete_category(data['oldname'], user['sub'])
+        response = await category.delete_category(data['oldname'], user['sub'])
         return RedirectResponse('/categories')
     return RedirectResponse('/auth/login')
 
 
 async def create_category_form(request):
-    session_user=request.session.get("user")
-    data=await request.form()
-    template="category.html"
-    form=await CreateCategories.from_formdata(request)
-    context={"request": request, "form": form}
+    session_user = request.session.get("user")
+    data = await request.form()
+    template = "category.html"
+    form = await CreateCategories.from_formdata(request)
+    context = {"request": request, "form": form}
     return templates.TemplateResponse(template, context)
 
 
 async def balance(request):
-    user=request.session.get("user")
+    user = request.session.get("user")
     if 'sub' in user:
-        env=Environment()
-        env.loader=FileSystemLoader('./templates')
-        template=env.get_template('balance.html')
-        form=await BalanceForm.from_formdata(request)
+        env = Environment()
+        env.loader = FileSystemLoader('./templates')
+        template = env.get_template('balance.html')
+        form = await BalanceForm.from_formdata(request)
         if form.validate_on_submit():
-            html=template.render(form = form)
+            html = template.render(form=form)
             return HTMLResponse(html)
 
 
 async def income(request):
-    session_user=request.session.get("user")
+    session_user = request.session.get("user")
     if 'sub' in session_user:
-        env=Environment()
-        env.loader=FileSystemLoader('./templates')
-        template=env.get_template('income.html')
-        form=await IncomeForm.from_formdata(request)
+        env = Environment()
+        env.loader = FileSystemLoader('./templates')
+        template = env.get_template('income.html')
+        form = await IncomeForm.from_formdata(request)
         if form.validate_on_submit():
-            html=template.render(form = form)
+            html = template.render(form=form)
             return HTMLResponse(html)
     return RedirectResponse('/')
 
 
 async def balance_response(request):
-    user=User()
-    session_user=request.session.get("user")
-    data=await request.form()
+    user = User()
+    session_user = request.session.get("user")
+    data = await request.form()
     if 'sub' in session_user:
         await user.create_balance(session_user['sub'], data['balance'])
 
@@ -294,9 +294,9 @@ async def balance_response(request):
 
 
 async def income_response(request):
-    user=User()
-    session_user=request.session.get("user")
-    data=await request.form()
+    user = User()
+    session_user = request.session.get("user")
+    data = await request.form()
     if 'sub' in session_user:
         await user.add_income(session_user['sub'], data['income_amount'])
 
@@ -304,28 +304,28 @@ async def income_response(request):
 
 
 async def dashboard(request):
-    session_user=request.session.get("user")
+    session_user = request.session.get("user")
     if session_user:
-        env=Environment()
-        env.loader=FileSystemLoader('./templates')
-        template=env.get_template('dashboard.html')
-        user_balance=User()
-        transactions=Transactions()
-        category=Categories()
+        env = Environment()
+        env.loader = FileSystemLoader('./templates')
+        template = env.get_template('dashboard.html')
+        user_balance = User()
+        transactions = Transactions()
+        category = Categories()
         # user = request.session.get("user")
-        form=await CreateAccountForm.from_formdata(request)
-        categories=await category.get_user_categories(session_user['sub'])
+        form = await CreateAccountForm.from_formdata(request)
+        categories = await category.get_user_categories(session_user['sub'])
         if categories is not None:
-            form.categories.choices=[c.name for c in categories]
+            form.categories.choices = [c.name for c in categories]
         else:
-            form.categories.choices=""
-        income=await user_balance.get_income(session_user['sub'])
-        balance=await user_balance.get_balance(session_user['sub'])
-        total_expenses=await transactions.sum_of_transactions(session_user['sub'])
-        last_five_transaction_amounts=[t.amount for t in await transactions.last_five_transactions(session_user['sub'])]
-        last_five_names=[t.note for t in await transactions.last_five_transactions(session_user['sub'])]
-        last_five_categories=[t.categories for t in await transactions.last_five_transactions(session_user['sub'])]
-        context={"request": request, "categories": categories, "income": income,
+            form.categories.choices = ""
+        income = await user_balance.get_income(session_user['sub'])
+        balance = await user_balance.get_balance(session_user['sub'])
+        total_expenses = await transactions.sum_of_transactions(session_user['sub'])
+        last_five_transaction_amounts = [t.amount for t in await transactions.last_five_transactions(session_user['sub'])]
+        last_five_names = [t.note for t in await transactions.last_five_transactions(session_user['sub'])]
+        last_five_categories = [t.categories for t in await transactions.last_five_transactions(session_user['sub'])]
+        context = {"request": request, "categories": categories, "income": income,
                    "balance": balance, "last_five": zip(last_five_names, last_five_transaction_amounts, last_five_categories),
                    "expenses": total_expenses, "form": form}
         return templates.TemplateResponse(template, context=context)
