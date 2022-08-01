@@ -17,6 +17,7 @@ updateModal.addEventListener('show.bs.modal', function (event) {
     // Update the modal's content.
     var modalTitle = updateModal.querySelector('.modal-title')
     var modalBodyInput = updateModal.querySelector('.modal-body input')
+    var oldName = updateModal.querySelector("#oldname");
     var dateInput = updateModal.querySelector('#date')
     var oldDate = updateModal.querySelector('#olddate')
     var amountInput = updateModal.querySelector('#amount')
@@ -26,6 +27,7 @@ updateModal.addEventListener('show.bs.modal', function (event) {
 
     modalTitle.textContent = 'Update Expense ' + category
     modalBodyInput.value = description
+    oldName.value = description
     dateInput.value = date
     oldDate.value = date
     amountInput.value = amount

@@ -58,7 +58,7 @@ async def add_transaction_response(request):
         print(data)
         current_balance = await user.get_balance(user_id=session_user['sub'])
         new_balance = (current_balance - float(data['transaction']))
-        now = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         print(f'now is {now}')
         print(datetime.strptime(now, "%Y-%m-%d %H:%M:%S").date())
         print(await category.get_category_id(session_user['sub']))
