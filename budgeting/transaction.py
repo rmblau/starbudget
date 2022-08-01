@@ -42,7 +42,7 @@ class Transactions():
     async def get_transaction_id(self, user_id, recipient: str, amount: float, note: str, date: datetime, category: Categories, submit_time: datetime):
         async with Session() as session:
             print(f"user_id type is {type(user_id)}, amount type is {type(amount)}, note type is {type(note)}, date type is {type(date)}, category type is {type(category)}, submit time type is {type(submit_time)}")
-            transaction = await session.execute(select(Transaction.id).where(Transaction.user_id == user_id).where(Transaction.recipient == recipient).where(Transaction.amount == amount).where(Transaction.date == date).where(Transaction.categories == category).where(Transaction.note == note).where(Transaction.date_added == datetime(submit_time)))
+            transaction = await session.execute(select(Transaction.id).where(Transaction.user_id == user_id).where(Transaction.recipient == recipient).where(Transaction.amount == amount).where(Transaction.date == date).where(Transaction.categories == category).where(Transaction.note == note).where(Transaction.date_added == submit_time))
             transaction_id = transaction.scalar_one_or_none()
             return transaction_id
 
