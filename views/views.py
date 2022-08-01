@@ -119,7 +119,7 @@ async def update_or_delete_transaction(request):
                     f'transaction_id is {transaction_id}')
                 await transaction.edit_transaction(recipient=data['newrecipient'],
                                                    amount=float(data['newamount']), note=data['newname'], date_of_transactions=date,
-                                                   user_id=session_user['sub'], old_category_id=transaction_id, categories=data['category'], submit_time=datetime.timestamp(
+                                                   user_id=session_user['sub'], old_category_id=transaction_id, categories=data['category'], submit_time=datetime(
                     (submit_time)))
                 print("do something")
             elif 'btnDeleteTransaction' in data:
