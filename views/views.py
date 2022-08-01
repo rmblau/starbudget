@@ -107,25 +107,20 @@ async def update_or_delete_transaction(request):
                 data['olddate'], "%Y-%m-%d").date()
             submit_time = datetime.strptime(
                 data['submitTime'], "%Y-%m-%d %H:%M:%S.%f")
-            print(type(old_date))
-            print(submit_time)
             date = datetime.strptime(
                 data['date'], "%Y-%m-%d").date()
-            print(date)
             print(f"submit time: {data['submitTime']}")
             if 'btnUpdateTransaction' in data:
-                print('btnUpdateTransaction' in data == True)
-                print(f"submitted time is {data['submitTime']}")
-                print(f'new description is {data["newname"]}')
-                print(f" note is {data['oldname']}")
                 print(
                     f"user is is {session_user['sub']}, recipent is {data['old_recipient']}, amount is {data['oldamount']}, note is {data['oldname']}, date is {date}, category is {data['oldcategory']}, submitTime is {data['submitTime']}")
-                transaction_id = await transaction.get_transaction_id(user_id=str(session_user['sub']), recipient=str(data['old_recipient']), amount=float(data['oldamount']), note=data['oldname'], date=date, category=str(data['oldcategory']), submit_time=datetime.strftime(submit_time, "%Y-%m-%d %H:%M:%S.%f"))
-                print(f'transaction_id is {transaction_id}')
-                transacation = await transaction.edit_transaction(recipient=data['newrecipient'],
-                                                                  amount=float(data['newamount']), note=data['newname'], date_of_transactions=date,
-                                                                  user_id=session_user['sub'], old_category_id=transaction_id, categories=data['category'], submit_time=data['submitTime'])
-                print(transacation)
+                print(datetime.timestamp(submit_time))
+                transaction_id = await transaction.get_transaction_id(user_id=str(session_user['sub']), recipient=str(data['old_recipient']), amount=float(data['oldamount']), note=data['oldname'], date=date, category=str(data['oldcategory']), submit_time=datetime.timestamp((submit_time)))
+                print(
+                    f'transaction_id is {transaction_id}')
+                await transaction.edit_transaction(recipient=data['newrecipient'],
+                                                   amount=float(data['newamount']), note=data['newname'], date_of_transactions=date,
+                                                   user_id=session_user['sub'], old_category_id=transaction_id, categories=data['category'], submit_time=datetime.timestamp(
+                    (submit_time)))
                 print("do something")
             elif 'btnDeleteTransaction' in data:
                 print(data['submitTime'])
