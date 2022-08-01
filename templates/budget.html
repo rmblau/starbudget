@@ -42,7 +42,7 @@
     </tr>
         <tr>
         {% for transaction in page.object_list %}
-        <th scope="col"><a href="#" data-bs-toggle="modal" data-bs-target="#updateModal" data-bs-receipient="{{ transaction.recipient }}" data-bs-description="{{ transaction.note }}" data-bs-category="{{ transaction.categories }}" data-bs-date="{{ transaction.date }}" ="{{ transaction.date_added }}" data-bs-submit-time="{{ transaction.date_added }}" data-bs-amount="{{ transaction.amount }}" >{{ transaction.recipient }}</a></th>
+        <th scope="col"><a href="#" data-bs-toggle="modal" data-bs-target="#updateModal" data-bs-recipient="{{ transaction.recipient }}" data-bs-description="{{ transaction.note }}" data-bs-category="{{ transaction.categories }}" data-bs-date="{{ transaction.date }}" ="{{ transaction.date_added }}" data-bs-submit-time="{{ transaction.date_added }}" data-bs-amount="{{ transaction.amount }}" >{{ transaction.recipient }}</a></th>
         <th scope="col">{{ "%.2f"|float(transaction.amount) }} </th>
         <th scope="col">{{ transaction.note }}
         <th scope="col"> {{ transaction.categories }}</th>  
