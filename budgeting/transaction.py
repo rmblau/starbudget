@@ -12,7 +12,7 @@ from sqlalchemy.orm import selectinload
 
 class Transactions():
 
-    async def add_transaction(self, amount: float, recipient: str, note: str, date_of_transaction: float, user_id: BigInteger, categories: Categories, date_added: datetime):
+    async def add_transaction(self, amount: float, recipient: str, note: str, date_of_transaction: float, user_id: BigInteger, categories: Categories, date_added: str):
         async with Session() as session:
             transaction = Transaction(
                 amount=float(amount), recipient=recipient, note=note, date=date_of_transaction, user_id=user_id, categories=categories, date_added=date_added)

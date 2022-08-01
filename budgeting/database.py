@@ -67,8 +67,7 @@ class Transaction(Base):
         "Categories", back_populates="transaction", uselist=False)
     categories = Column(String, ForeignKey(
         "categories.name", onupdate="cascade"))
-    date_added = Column(
-        DateTime(timezone=True))
+    date_added = Column(DateTime)
 
     def __init__(self, amount, recipient, note, date, user_id, categories, date_added) -> None:
         self.amount = amount
