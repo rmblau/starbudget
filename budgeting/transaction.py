@@ -20,10 +20,10 @@ class Transactions():
             await session.commit()
         return transaction
 
-    async def edit_transaction(self, amount: float, recipient: str, note: str, date_of_transactions: float, user_id: str, old_category_id: int, categories: str, submit_time: date):
+    async def edit_transaction(self, amount: float, recipient: str, note: str, date_of_transactions: date, user_id: str, old_category_id: int, categories: str, submit_time: datetime):
         async with Session() as session:
             now = datetime.today()
-            updated_transaction = await session.execute(update(Transaction).values(recipient=recipient, amount=float(amount), note=note, date=date_of_transactions, user_id=user_id, categories=categories, date_added=now).where(Transaction.user_id == user_id).where(Transaction.id == old_category_id).where(Transaction.date_added == submit_time))
+            updated_transaction = await session.execute(update(Transaction).values(recipient=recipient, amount=float(amount), note=note, date=date_of_transactions, user_id=user_id, categories=categories, date_added=now).where(Transaction.user_id == user_id).where(Transaction.id == old_category_id).where(Transaction.date_added == datetime(submit_time)))
             await session.commit()
         return updated_transaction
 
@@ -42,7 +42,7 @@ class Transactions():
     async def get_transaction_id(self, user_id, recipient: str, amount: float, note: str, date: datetime, category: Categories, submit_time: datetime):
         async with Session() as session:
             print(f"user_id type is {type(user_id)}, amount type is {type(amount)}, note type is {type(note)}, date type is {type(date)}, category type is {type(category)}, submit time type is {type(submit_time)}")
-            transaction = await session.execute(select(Transaction.id).where(Transaction.user_id == user_id).where(Transaction.recipient == recipient).where(Transaction.amount == amount).where(Transaction.date == date).where(Transaction.categories == category).where(Transaction.note == note).where(Transaction.date_added == submit_time))
+            transaction = await session.execute(select(Transaction.id).where(Transaction.user_id == user_id).where(Transaction.recipient == recipient).where(Transaction.amount == amount).where(Transaction.date == date).where(Transaction.categories == category).where(Transaction.note == note).where(Transaction.date_added == datetime(submit_time)))
             transaction_id = transaction.scalar_one_or_none()
             return transaction_id
 
