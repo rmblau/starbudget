@@ -9,6 +9,7 @@ updateModal.addEventListener('show.bs.modal', function (event) {
     var oldcategory = updateModal.querySelector('#oldcategory')
     var date = button.getAttribute('data-bs-date')
     var submitTime = button.getAttribute('data-bs-submit-time')
+    var recipient = button.getAttribute('data-bs-recipient')
     var amount = button.getAttribute('data-bs-amount')
     // If necessary, you could initiate an AJAX request here
     // and then do the updating in a callback.
@@ -20,6 +21,7 @@ updateModal.addEventListener('show.bs.modal', function (event) {
     var oldDate = updateModal.querySelector('#olddate')
     var amountInput = updateModal.querySelector('#amount')
     var categoryInput = updateModal.querySelector('#category')
+    var receipientInput = updateModal.querySelector("#recipient")
     var submitTimeInput = updateModal.querySelector('#submitTime').value = submitTime
 
     modalTitle.textContent = 'Update Expense ' + category
@@ -29,5 +31,6 @@ updateModal.addEventListener('show.bs.modal', function (event) {
     amountInput.value = amount
     oldcategory.value = category
     categoryInput.value = category
+    receipientInput.value = recipient
     //submitTimeInput.value = submitTime
 })
