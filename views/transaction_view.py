@@ -69,9 +69,7 @@ async def add_transaction_response(request):
             data['date_of_transaction'], "%Y-%m-%d"),
             user_id=session_user['sub'],
             categories=data['categories'],
-            date_added=datetime.strptime(datetime.utcnow().strftime("%Y%m%d%H%M%S%f")
-        )
-
+            date_added=datetime.utcnow())
     elif 'id' in session_user:
         await transaction.add_transaction(data['transaction'],
                                           note=data['note'],
