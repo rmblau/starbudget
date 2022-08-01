@@ -114,7 +114,7 @@ async def update_or_delete_transaction(request):
                 print(
                     f"user is is {session_user['sub']}, recipent is {data['old_recipient']}, amount is {data['oldamount']}, note is {data['oldname']}, date is {date}, category is {data['oldcategory']}, submitTime is {data['submitTime']}")
                 print(datetime.timestamp(submit_time))
-                transaction_id = await transaction.get_transaction_id(user_id=str(session_user['sub']), recipient=str(data['old_recipient']), amount=float(data['oldamount']), note=data['oldname'], date=date, category=str(data['oldcategory']), submit_time=datetime.timestamp((submit_time)))
+                transaction_id = await transaction.get_transaction_id(user_id=str(session_user['sub']), recipient=str(data['old_recipient']), amount=float(data['oldamount']), note=data['oldname'], date=date, category=str(data['oldcategory']), submit_time=datetime((submit_time)))
                 print(
                     f'transaction_id is {transaction_id}')
                 await transaction.edit_transaction(recipient=data['newrecipient'],
