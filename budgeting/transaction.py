@@ -23,7 +23,7 @@ class Transactions():
     async def edit_transaction(self, amount: float, recipient: str, note: str, date_of_transactions: date, user_id: str, old_category_id: int, categories: str, submit_time: datetime):
         async with Session() as session:
             now = datetime.today()
-            updated_transaction = await session.execute(update(Transaction).values(recipient=recipient, amount=float(amount), note=note, date=date_of_transactions, user_id=user_id, categories=categories, date_added=now).where(Transaction.user_id == user_id).where(Transaction.id == old_category_id).where(Transaction.date_added == datetime(submit_time)))
+            updated_transaction = await session.execute(update(Transaction).values(recipient=recipient, amount=float(amount), note=note, date=date_of_transactions, user_id=user_id, categories=categories, date_added=now).where(Transaction.user_id == user_id).where(Transaction.id == old_category_id).where(Transaction.date_added == submit_time))
             await session.commit()
         return updated_transaction
 
