@@ -69,7 +69,7 @@ async def add_transaction_response(request):
             data['date_of_transaction'], "%Y-%m-%d"),
             user_id=session_user['sub'],
             categories=data['categories'],
-            date_added=datetime.utcnow()
+            date_added=datetime.utcnow().strftime("%Y%m%d%H%M%S%f")
         )
 
     elif 'id' in session_user:
