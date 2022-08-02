@@ -2,6 +2,7 @@
 from budgeting.user import User
 from .database import Transaction, Categories as UserCategories, Users
 from .base import Session
+import itertools
 from sqlalchemy import BigInteger, insert, select, asc, func, update, insert, delete
 from sqlalchemy.orm import selectinload
 
@@ -12,12 +13,20 @@ class Categories():
         async with Session() as session:
             categories = await session.execute(select(UserCategories).where(UserCategories.user_id == user_id))
             category = categories.scalars().all()
+            delimiter = '~'
+            category_names = [c.name for c in category]
+            category_stripped = [c.split('~')[0] for c in category_names]
+            print(category_stripped)
+            # split_category = (list(y.name for y in category) for x, y in itertools.groupby(
+            #    category, lambda z: z == delimiter) if not x)
+            # print(split_category)
             await session.commit()
-            return category
+            return category_stripped
 
     async def create_category(self, user_id, category):
         async with Session() as session:
-            category = UserCategories(name=category, user_id=user_id)
+            category = UserCategories(
+                name=f'{category}~{user_id}', user_id=user_id)
             session.add(category)
             await session.commit()
         return category
@@ -34,7 +43,7 @@ class Categories():
 
     async def update_category_name(self, new_name, old_name, user_id):
         async with Session() as session:
-            category = await session.execute(update(UserCategories).values(name=new_name).where(UserCategories.user_id == user_id).where(UserCategories.name == old_name).execution_options(synchronize_session="fetch"))
+            category = await session.execute(update(UserCategories).values(name=f'{new_name}-{user_id}').where(UserCategories.user_id == user_id).where(UserCategories.name == old_name).execution_options(synchronize_session="fetch"))
             await session.commit()
             return category
 

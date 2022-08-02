@@ -197,8 +197,8 @@ async def categories(request):
         template = env.get_template('categories.html')
         categories = await category.get_user_categories(user['sub'])
         form = await UpdateCategories.from_formdata(request)
-        context = {"request": request, "categories": [
-            c.name for c in categories], "form": form}
+        context = {"request": request, "categories":
+                   categories, "form": form}
         return templates.TemplateResponse(template, context=context)
 
 

@@ -15,7 +15,7 @@ class Transactions():
     async def add_transaction(self, amount: float, recipient: str, note: str, date_of_transaction: float, user_id: BigInteger, categories: Categories, date_added: str):
         async with Session() as session:
             transaction = Transaction(
-                amount=float(amount), recipient=recipient, note=note, date=date_of_transaction, user_id=user_id, categories=categories, date_added=date_added)
+                amount=float(amount), recipient=recipient, note=note, date=date_of_transaction, user_id=user_id, categories=f'{categories}~{user_id}', date_added=date_added)
             session.add(transaction)
             await session.commit()
         return transaction
