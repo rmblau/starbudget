@@ -111,9 +111,9 @@ async def update_or_delete_transaction(request):
                                                    user_id=session_user['sub'], old_category_id=transaction_id, categories=data['category'], submit_time=str(submit_time))
             elif 'btnDeleteTransaction' in data:
                 print(data['submitTime'])
-                transaction_id = await transaction.get_transaction_id(user_id=session_user['sub'], recipient=data['old_recipient'], amount=data['oldamount'], note=data['oldname'], date=old_date, category=data['old-category'], submit_time=data['submitTime'])
+                transaction_id = await transaction.get_transaction_id(user_id=str(session_user['sub']), recipient=str(data['old_recipient']), amount=float(data['oldamount']), note=data['oldname'], date=old_date, category=str(data['old-category']), submit_time=str(data['submitTime']))
                 await transaction.delete_transaction(
-                    session_user['sub'], transaction_id)
+                    str(session_user['sub']), int(transaction_id))
                 # await user.update_balance(session_user['sub'], await transaction.sum_of_transactions(session_user['sub']))
                 await transaction.sum_of_transactions(session_user['sub'])
             return RedirectResponse("/budget")
