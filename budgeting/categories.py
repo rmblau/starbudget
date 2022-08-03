@@ -14,19 +14,16 @@ class Categories():
             categories = await session.execute(select(UserCategories).where(UserCategories.user_id == user_id))
             category = categories.scalars().all()
             delimiter = '~'
-            category_names = [c.name for c in category]
-            category_stripped = [c.split('~')[0] for c in category_names]
-            print(category_stripped)
-            # split_category = (list(y.name for y in category) for x, y in itertools.groupby(
-            #    category, lambda z: z == delimiter) if not x)
-            # print(split_category)
+            #category_names = [c.name for c in category]
+            #category_stripped = [c.split('~')[0] for c in category_names]
+            print([c.name for c in category])
             await session.commit()
-            return category_stripped
+            return category
 
     async def create_category(self, user_id, category):
         async with Session() as session:
             category = UserCategories(
-                name=f'{category}~{user_id}', user_id=user_id)
+                name=category, user_id=user_id)
             session.add(category)
             await session.commit()
         return category
@@ -43,7 +40,7 @@ class Categories():
 
     async def update_category_name(self, new_name, old_name, user_id):
         async with Session() as session:
-            category = await session.execute(update(UserCategories).values(name=f'{new_name}-{user_id}').where(UserCategories.user_id == user_id).where(UserCategories.name == old_name).execution_options(synchronize_session="fetch"))
+            category = await session.execute(update(UserCategories).values(name=f'{new_name}~{user_id}').where(UserCategories.user_id == user_id).where(UserCategories.name == f'{old_name}~{user_id}').execution_options(synchronize_session="fetch"))
             await session.commit()
             return category
 

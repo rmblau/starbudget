@@ -83,7 +83,7 @@ class Categories(Base):
     __tablename__ = 'categories'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, unique=True)
+    name = Column(String, unique=False)
     user_id = Column(String, ForeignKey("users.user_id"))
     transaction = relationship(
         "Transaction", back_populates="category", uselist=False)

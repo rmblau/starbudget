@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from this import d
+from unicodedata import category
 
 import sqlalchemy
 
@@ -56,4 +57,11 @@ class Transactions():
         async with Session() as session:
             transaction = await session.execute(select(Transaction).where(Transaction.user_id == user_id).limit(5).order_by(Transaction.date.desc()))
             transactions = transaction.scalars().all()
-            return transactions
+            recipient = [t.recipient for t in transactions]
+            amount = [t.amount for t in transactions]
+            description = [t.note for t in transactions]
+            category = [t.categories for t in transactions]
+            category_stripped = [c.split('~')[0] for c in category]
+            print([t.amount for t in transactions])
+            print(f'last 5 transactions are {transactions}')
+            return recipient, amount, description, category_stripped

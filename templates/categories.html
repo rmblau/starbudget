@@ -34,10 +34,10 @@
             {% for category in categories %}
             <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle align-items-center" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" data-category= "{{ category }}">
-              {{ category }}
+              {{ category.split('~')[0] }}
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-whatever="{{ category }}"data-bs-target="#renameModal" data-category="{{ category }}">Rename</a></li>
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-whatever="{{ category.split("~")[0] }}" data-bs-target="#renameModal" data-category={{ category }}>Rename</a></li>
             <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-whatever="{{ category }}" data-bs-target="#deleteModal" data-category="{{ category }}">Delete</a>
             </ul>
             </div>

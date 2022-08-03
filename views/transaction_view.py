@@ -26,10 +26,6 @@ async def transaction_add_form(request):
         template = env.get_template('add_transaction.html')
         categories = await category.get_user_categories(user['sub'])
         form = await CreateAccountForm.from_formdata(request)
-        if categories is not None:
-            form.categories.choices = [c.name for c in categories]
-        else:
-            form.categories.choices = "Test"
         html = template.render(form=form)
         return HTMLResponse(html)
     elif 'id' in user:

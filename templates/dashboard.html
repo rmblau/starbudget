@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container-fluid">
+<div class="container-fluid">
 <div class="col-md-12 text-center">
 <br></br>
 <button class="btn btn-outline-primary btn-block btn-lg" href="#" data-bs-toggle="modal" data-bs-whatever="expenseModal"data-bs-target="#expenseModal" data-category="{{ category }}">Add expense</button>
@@ -122,13 +123,15 @@
     <tr>
         <th>Name</th>
         <th>Amount</th>
+        <th>Description</th>
         <th>Category</th>
     </tr>
         <tr>
-        {% for name, amount, category in last_five %}
-         <th scope="col">{{ name }} </th>
+        {% for recipient, amount, description, category_stripped in last_five %}
+         <th scope="col">{{ recipient }} </th>
         <th scope="col">{{ amount }} </th>
-        <th scope="col">{{ category }} </th>
+        <th scope="col">{{ description }} </th>
+        <th scope="col">{{ category_stripped }} </th>
     </tr>
 </div>
 </div>
