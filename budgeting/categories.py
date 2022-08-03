@@ -23,7 +23,7 @@ class Categories():
     async def create_category(self, user_id, category):
         async with Session() as session:
             category = UserCategories(
-                name=category, user_id=user_id)
+                name=f'{category}~{user_id}', user_id=user_id)
             session.add(category)
             await session.commit()
         return category
