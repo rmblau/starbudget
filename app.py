@@ -8,7 +8,9 @@ import uvicorn
 from views import views, transaction_view
 from budgeting.base import create_table
 from routing import auth, routes, category
-
+import string
+import secrets
+alphabet = string.ascii_letters + string.digits
 static = StaticFiles(directory="static")
 routes = [
     Route("/", views.homepage, name="home", methods=["GET"]),
@@ -19,7 +21,6 @@ routes = [
           name="transaction", methods=["GET", "POST"]),
     Route("/update_or_delete_transaction", views.update_or_delete_transaction,
           methods=['GET', 'POST']),
-    Route("/success", views.success, name="success", methods=["GET", "POST"]),
     Route("/response", transaction_view.add_transaction_response,
           name="response", methods=["POST"]),
     Route('/create_user', views.user_info, methods=["POST"]),
@@ -44,12 +45,13 @@ routes = [
 async def startup():
     table = await create_table()
     return table
-app = Starlette(debug=True,
+app = Starlette(debug=False,
                 routes=routes,
                 exception_handlers=views.exception_handlers,
                 on_startup=[startup],
                 )
-app.add_middleware(SessionMiddleware, secret_key="!secret", max_age=None)
+app.add_middleware(SessionMiddleware, secret_key=''.join(
+    secrets.choice(alphabet) for i in range(10)), max_age=None)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000,
