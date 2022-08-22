@@ -75,3 +75,13 @@ async def add_transaction_response(request):
             categories=data['categories']
         )
     return RedirectResponse('/budget')
+
+
+async def income_add_response(request):
+    session_user = request.session.get("user")
+    data = await request.form()
+    user = User()
+    transaction = Transactions()
+    if 'sub' in session_user:
+        await user.add_income(session_user['sub'], amount=data['amount'])
+    return RedirectResponse('/dashboard')

@@ -13,10 +13,6 @@ class Categories():
         async with Session() as session:
             categories = await session.execute(select(UserCategories).where(UserCategories.user_id == user_id))
             category = categories.scalars().all()
-            delimiter = '~'
-            #category_names = [c.name for c in category]
-            #category_stripped = [c.split('~')[0] for c in category_names]
-            print([c.name for c in category])
             await session.commit()
             return category
 

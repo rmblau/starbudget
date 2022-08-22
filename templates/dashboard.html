@@ -5,6 +5,7 @@
 <div class="col-md-12 text-center">
 <br></br>
 <button class="btn btn-outline-primary btn-block btn-lg" href="#" data-bs-toggle="modal" data-bs-whatever="expenseModal"data-bs-target="#expenseModal" data-category="{{ category }}">Add expense</button>
+<button class="btn btn-outline-primary btn-block btn-lg" href="#" data-bs-toggle="modal" data-bs-whatever="incomeModal"data-bs-target="#incomeModal" data-category="{{ category }}">Add Income</button>
 <br></br>
 <div class="modal fade" id="expenseModal" tabindex="-1" aria-labelledby="expenseModal" aria-hidden="true">
   <div class="modal-dialog">
@@ -68,6 +69,32 @@
 </div>
 </div>
 
+<div class="modal fade" id="incomeModal" tabindex="-1" aria-labelledby="incomeModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Income</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" id="expenseForm" action="/income_add_response">
+        <div class="form-group text-center">
+          {{ income_form.amount(placeholder="$10") }}
+          {% if income_form.amount.errors -%}
+          <span>{{ income_form.amount.errors[0] }}</span>
+          {%- endif %}
+        </div>
+    <br></br>
+    <div class="text-center">
+    <button class="btn btn-outline-success me-2 text-center" type="submit">Add income</button>
+    </div>
+  </form>
+ </div>
+</div>
+</div>
+</div>
+</div>
+
 <div class="row gx-5 gy-5">
   <div class="col-sm-6">
     <div class="card">
@@ -77,7 +104,7 @@
 
         {% set bank_balance = (balance|float + income|float) - expenses|float %}
         <p class="card-text">{{ "%.2f"|format(bank_balance) }}</p>
-        {% elif income is none %}
+        {% elif income <= 0.00 or income is None %}
         {% set bank_balance = balance|float - expenses|float %}
         <p class="card-text">{{ "%.2f"|format(bank_balance) }}</p>
         {% else %}
@@ -106,7 +133,7 @@
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Income</h5>
-        <p class="card-text">Placeholder Value</p>
+        <p class="card-text">{{ income }}</p>
       </div>
     </div>
   </div>

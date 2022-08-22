@@ -5,7 +5,7 @@ from unicodedata import category
 import sqlalchemy
 
 from budgeting.categories import Categories
-from .database import Transaction
+from .database import Transaction, Income
 from .base import Session
 from sqlalchemy import BigInteger, delete, insert, select, asc, func, update, insert
 from sqlalchemy.orm import selectinload
@@ -42,7 +42,6 @@ class Transactions():
 
     async def get_transaction_id(self, user_id, recipient: str, amount: float, note: str, date: datetime, category: Categories, submit_time: datetime):
         async with Session() as session:
-            print(f"user_id type is {type(user_id)}, amount type is {type(amount)}, note type is {type(note)}, date type is {type(date)}, category type is {type(category)}, submit time type is {type(submit_time)}")
             transaction = await session.execute(select(Transaction.id).where(Transaction.user_id == user_id).where(Transaction.recipient == recipient).where(Transaction.amount == amount).where(Transaction.date == date).where(Transaction.categories == category).where(Transaction.note == note).where(Transaction.date_added == submit_time))
             transaction_id = transaction.scalar_one_or_none()
             return transaction_id
@@ -53,6 +52,12 @@ class Transactions():
             transactions = transaction.scalar()
             return transactions
 
+    async def sum_of_income(self, user_id):
+        async with Session() as session:
+            income_amount = await session.execute(select(sqlalchemy.func.coalesce(sqlalchemy.func.sum(Income.amount), 0.00)).where(Income.user_id == user_id))
+            income = income_amount.scalar()
+            return income
+
     async def last_five_transactions(self, user_id: BigInteger):
         async with Session() as session:
             transaction = await session.execute(select(Transaction).where(Transaction.user_id == user_id).limit(5).order_by(Transaction.date.desc()))
@@ -62,6 +67,4 @@ class Transactions():
             description = [t.note for t in transactions]
             category = [t.categories for t in transactions]
             category_stripped = [c.split('~')[0] for c in category]
-            print([t.amount for t in transactions])
-            print(f'last 5 transactions are {transactions}')
             return recipient, amount, description, category_stripped

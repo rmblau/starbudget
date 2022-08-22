@@ -19,7 +19,7 @@
         {% if income %}
         {% set bank_balance = (balance|float + income|float) - expenses|float %}
         <p class="card-text">{{ "%.2f"|format(bank_balance) }}</p>
-        {% elif income is none %}
+        {% elif income <= 0.00 or income is none %}
         {% set bank_balance = balance|float - expenses|float %}
         <p class="card-text">{{ "%.2f"|format(bank_balance) }}</p>
         {% else %}
@@ -87,7 +87,7 @@
         <input type="text" class="form-control" name="oldname" id="oldname" value="" form="updateTransaction"readonly required hidden>
       <div class="modal-body text-center">
      <label for="newrecipient" class="col-form-label">Recipient:</label>
-      <input type="text" class="form-control" name="newrecipient" id="newrecipient" form="updateTransaction">
+      <input type="text" class="form-control" name="newrecipient" id="newrecipient" form="updateTransaction" required>
     </div>
         <div class="modal-body text-center">
      <label for="newname" class="col-form-label">Description:</label>
@@ -106,8 +106,8 @@
       <input type="text" class="form-control" name="submitTime" id="submitTime" value="" form="updateTransaction" required readonly hidden>
     </div>
     <div class="form-group">
-               <label for="old-category" class="col-form-label">Old Category:</label>
-                  <select id="old-category" class="form-control-sm" name="old-category" form="updateTransaction" required>
+               <label for="old-category" class="col-form-label" hidden>Old Category:</label>
+                  <select id="old-category" class="form-control-sm" name="old-category" form="updateTransaction" required readonly hidden>
                     {% for category in categories %}
                       <option value="{{ category }}">{{ category.split('~')[0] }}</option>
                     {% endfor %}
@@ -115,7 +115,7 @@
             </div>
     <div class="modal-body text-center">
      <label for="newamount" class="col-form-label">Amount:</label>
-      <input type="text" class="form-control" name="newamount" id="newamount" form="updateTransaction">
+      <input type="text" class="form-control" name="newamount" id="newamount" form="updateTransaction" required>
     </div>
     <div class="form-group">
       <label for="date" class="col-form-label">Date:</label>

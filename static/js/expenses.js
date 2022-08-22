@@ -33,6 +33,7 @@ updateModal.addEventListener('show.bs.modal', function (event) {
     oldDate.value = date
     amountInput.value = amount
     oldcategory.value = category
+    categoryInput.value = category
     //categoryInput.value = category
     receipientInput.value = recipient
     //submitTimeInput.value = submitTime

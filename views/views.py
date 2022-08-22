@@ -29,7 +29,7 @@ async def first_login_response(request):
         first_login = user.get_first_login(session_user['sub'])
         if first_login:
             await user.create_user(name=session_user['name'], user_id=session_user['sub'], categories=f'{"Uncategorized"}~{session_user["sub"]}', bank_balance=0.0)
-            await user.add_income(session_user['sub'], amount=0.0)
+            await user.add_income(session_user['sub'], amount=0.00)
             await user.update_first_login(session_user['sub'])
         else:
             await user.update_user(user_id=session_user['sub'], categories="Uncategorized", bank_balance=0.0)
@@ -72,7 +72,7 @@ async def render_budget(request, user_id):
         f'for some reason I am doing this? {[t.categories for t in transaction]}')
     categories = await category.get_user_categories(user_id=user_id)
     print(f'categories are {[c.name for c in categories]}')
-    income = await user.get_income(user_id)
+    income = await transactions.sum_of_income(user_id)
     balance = await user.get_balance(user_id)
     total_expenses = await transactions.sum_of_transactions(user_id)
     sum_of_transacations = await transactions.sum_of_transactions(user_id=user_id)
@@ -305,19 +305,20 @@ async def dashboard(request):
         transactions = Transactions()
         category = Categories()
         form = await CreateAccountForm.from_formdata(request)
+        income_form = await IncomeForm.from_formdata(request)
         categories = await category.get_user_categories(session_user['sub'])
         if categories is not None:
             form.categories.choices = [
                 c.name.split('~')[0] for c in categories]
         else:
             form.categories.choices = ""
-        income = await user_balance.get_income(session_user['sub'])
+        income = await transactions.sum_of_income(session_user['sub'])
         balance = await user_balance.get_balance(session_user['sub'])
         total_expenses = await transactions.sum_of_transactions(session_user['sub'])
         recipient, amount, description, category_stripped = await transactions.last_five_transactions(session_user['sub'])
         context = {"request": request, "categories": [c.name for c in categories], "income": income,
                    "balance": balance, "last_five": zip(recipient, amount, description, category_stripped),
-                   "expenses": total_expenses, "form": form}
+                   "expenses": total_expenses, "form": form, "income_form": income_form}
         return templates.TemplateResponse(template, context=context)
     else:
         return RedirectResponse("auth/login")
