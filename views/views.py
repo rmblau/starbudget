@@ -30,10 +30,11 @@ async def first_login_response(request):
         if first_login:
             await user.create_user(name=session_user['name'], user_id=session_user['sub'], categories=f'{"Uncategorized"}~{session_user["sub"]}', bank_balance=0.0)
             await user.add_income(session_user['sub'], amount=0.00)
+            await category.create_category(session_user['sub'], f"{data['categories']}")
             await user.update_first_login(session_user['sub'])
         else:
             await user.update_user(user_id=session_user['sub'], categories="Uncategorized", bank_balance=0.0)
-        await category.create_category(session_user['sub'], f"{data['categories']}~{session_user['sub']}")
+       # await category.create_category(session_user['sub'], f"{data['categories']}~{session_user['sub']}")
         await user.create_balance(session_user['sub'], data['balance'])
     if 'id' in session_user:
         first_login = user.get_first_login(session_user['id'])
@@ -112,9 +113,13 @@ async def update_or_delete_transaction(request):
             elif 'btnDeleteTransaction' in data:
                 print(data['submitTime'])
                 transaction_id = await transaction.get_transaction_id(user_id=str(session_user['sub']), recipient=str(data['old_recipient']), amount=float(data['oldamount']), note=data['oldname'], date=old_date, category=str(data['old-category']), submit_time=str(data['submitTime']))
+                
                 await transaction.delete_transaction(
                     str(session_user['sub']), int(transaction_id))
-                # await user.update_balance(session_user['sub'], await transaction.sum_of_transactions(session_user['sub']))
+                old_balance = await user.get_balance(user_id=session_user['sub'])
+                new_balance = old_balance - await transaction.sum_of_transactions(session_user['sub'])
+                print(f'NEW BALANCE IS {new_balance}')
+                #await user.update_balance(session_user['sub'], await transaction.sum_of_transactions(session_user['sub']))
                 await transaction.sum_of_transactions(session_user['sub'])
             return RedirectResponse("/budget")
 

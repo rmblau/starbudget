@@ -83,5 +83,5 @@ async def income_add_response(request):
     user = User()
     transaction = Transactions()
     if 'sub' in session_user:
-        await user.add_income(session_user['sub'], amount=data['amount'])
+        await user.add_income(session_user['sub'], amount=float(data['amount']))
     return RedirectResponse('/dashboard')

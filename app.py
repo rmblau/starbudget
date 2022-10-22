@@ -23,6 +23,7 @@ routes = [
           methods=['GET', 'POST']),
     Route("/response", transaction_view.add_transaction_response,
           name="response", methods=["POST"]),
+    Route("/income_add_response", transaction_view.income_add_response, methods=["POST"]),
     Route('/create_user', views.user_info, methods=["POST"]),
     Route('/categories', views.categories, methods=["GET", "POST"]),
     Route('/create_category', views.create_category, methods=["GET", "POST"]),
@@ -51,7 +52,7 @@ app = Starlette(debug=False,
                 on_startup=[startup],
                 )
 app.add_middleware(SessionMiddleware, secret_key=''.join(
-    secrets.choice(alphabet) for i in range(10)), max_age=None)
+    secrets.choice(alphabet) for i in range(30)), max_age=None)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000,

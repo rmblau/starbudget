@@ -16,7 +16,8 @@ def google_auth():
         name='google',
         server_metadata_url=CONF_URL,
         client_kwargs={
-            'scope': 'openid email profile'
+            'scope': 'openid email profile',
+            'prompt': 'select_account',
         },
         client_id=config.get('GOOGLE_CLIENT_ID'),
         client_secret=config.get('GOOGLE_CLIENT_SECRET')
