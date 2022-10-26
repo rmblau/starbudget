@@ -18,7 +18,6 @@ async def homepage(request):
     context = {"request": request}
     return templates.TemplateResponse(template, context)
 
-
 async def first_login_response(request):
     user = User()
     category = Categories()
@@ -147,57 +146,6 @@ async def index(request):
         return RedirectResponse("auth/login")
 
 
-async def success(request):
-    template = 'response.html'
-    context = {"request": request}
-    return templates.TemplateResponse(template, context)
-
-
-async def user_info(request):
-    session_user = request.session.get("user")
-    user = User()
-    print(f'user is {session_user}')
-    data = await request.form()
-    transaction = Transactions()
-    if 'sub' in user:
-        now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-        await transaction.add_transaction(data['transacation'],
-                                          note=data['note'],
-                                          user_id=session_user['sub'],
-                                          categories=data['categories'],
-                                          date_of_transaction=datetime.strptime(
-                                              data['date_of_transaction'], "%Y-%m-%d-%H:%M:%S"),
-                                          date_added=datetime.strptime(
-                                              now, "%Y-%m-%d %H:%M:%S").date())
-
-    elif 'id' in user:
-        await transaction.add_transaction(data['transaction'],
-                                          note=data['note'],
-                                          date_of_transaction=datetime.strptime(
-            data['date_of_transaction'], "%Y-%m-%d-%H:%M:%S"),
-            user_id=session_user['id'],
-            categories=data['categories']
-        )
-    return RedirectResponse('/success')
-
-
-async def categories(request):
-    user = request.session.get("user")
-    category = Categories()
-    categories = await category.get_user_categories(user['sub'])
-    template = "categories.html"
-    if 'sub' in user:
-        env = Environment()
-        env.loader = FileSystemLoader('./templates')
-        template = env.get_template('categories.html')
-        categories = await category.get_user_categories(user['sub'])
-        print(categories)
-        form = await UpdateCategories.from_formdata(request)
-        context = {"request": request, "categories":
-                   [c.name for c in categories], "form": form}
-        return templates.TemplateResponse(template, context=context)
-
-
 async def create_category(request):
     categories = Categories()
     user = request.session.get("user")
@@ -214,7 +162,7 @@ async def category_response(request):
 
     user = request.session.get("user")
     print(f'request is {await request.form()}')
-    button_click = request.get("data", False)
+    button_click = request.get("btnRenameCategory", False)
     print(f'button clicked is {button_click}')
     print(user)
     data = await request.form()
@@ -222,6 +170,7 @@ async def category_response(request):
     if 'sub' in user:
         if 'btnrenameCategory' in data:
             print('rename found')
+            await category.update_category_name(data['newname'], data['oldname'], user['sub'])
         else:
             print("Not found")
         user_categories = [c.name for c in await category.get_user_categories(user['sub'])]
@@ -240,8 +189,7 @@ async def delete_category(request):
     data = await request.form()
 
     if 'sub' in user:
-        print(f'{data["oldname"]} will be deleted')
-        response = await category.delete_category(data['oldname'], user['sub'])
+        await category.delete_category(f"{data['oldname']}~{user['sub']}", user['sub'])
         return RedirectResponse('/categories')
     return RedirectResponse('/auth/login')
 

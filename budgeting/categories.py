@@ -3,6 +3,7 @@ from budgeting.user import User
 from .database import Transaction, Categories as UserCategories, Users
 from .base import Session
 import itertools
+from sqlalchemy.sql import Delete
 from sqlalchemy import BigInteger, insert, select, asc, func, update, insert, delete
 from sqlalchemy.orm import selectinload
 
@@ -42,6 +43,6 @@ class Categories():
 
     async def delete_category(self, name, user_id):
         async with Session() as session:
-            category = await session.execute(delete(UserCategories).where(UserCategories.name == name).where(UserCategories.user_id == user_id))
+            category = await session.execute(Delete(UserCategories).where(UserCategories.name == name).where(UserCategories.user_id == user_id))
             await session.commit()
             return category
