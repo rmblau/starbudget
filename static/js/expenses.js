@@ -15,26 +15,31 @@ updateModal.addEventListener('show.bs.modal', function (event) {
     //
     // Update the modal's content.
     //let oldCategory = document.getElementById("oldcategory")
-    var modalTitle = updateModal.querySelector('#modal-title')
-    var modalBodyInput = updateModal.querySelector('.modal-body input')
+    var modalTitle = updateModal.querySelector('#modal-title');
+    var modalBodyInput = updateModal.querySelector('.modal-body input');
     var oldName = updateModal.querySelector("#oldname");
-    var dateInput = updateModal.querySelector('#date')
-    var oldDate = updateModal.querySelector('#olddate')
-    var amountInput = updateModal.querySelector('#amount')
-    var oldcategory = updateModal.querySelector('#old-category').value = category
-    var categoryInput = updateModal.querySelector('#category')
-    var receipientInput = updateModal.querySelector("#recipient")
-    var submitTimeInput = updateModal.querySelector('#submitTime').value = submitTime
+    var newName = updateModal.querySelector('#newname');
+    var dateInput = updateModal.querySelector('#date');
+    var oldDate = updateModal.querySelector('#olddate');
+    var amountInput = updateModal.querySelector('#amount');
+    var newAmountInput = updateModal.querySelector('#newamount')
+    var oldcategory = updateModal.querySelector('#old-category').value = category;
+    var categoryInput = updateModal.querySelector('#category');
+    var receipientInput = updateModal.querySelector("#recipient");
+    var newRecipientInput = updateModal.querySelector('#newrecipient');
+    var submitTimeInput = updateModal.querySelector('#submitTime').value = submitTime;
 
     modalTitle.textContent = 'Update Expense ' + description
     modalBodyInput.value = description
     oldName.value = description
+    newName.value = description
     dateInput.value = date
     oldDate.value = date
     amountInput.value = amount
+    newAmountInput.value = amount
     oldcategory.value = category
     categoryInput.value = category
-    //categoryInput.value = category
     receipientInput.value = recipient
+    newRecipientInput.value = recipient
     //submitTimeInput.value = submitTime
 })

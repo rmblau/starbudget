@@ -328,6 +328,11 @@ async def dashboard(request):
     else:
         return RedirectResponse("auth/login")
 
+async def reports(request):
+    stars = [135850, 52122, 148825, 16939, 9763]
+    template = "reports.html"
+    context = {"request": request, "stars": stars}
+    return templates.TemplateResponse(template, context)
 
 async def first_login(request):
     template = 'first_login.html'

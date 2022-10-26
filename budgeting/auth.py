@@ -78,14 +78,11 @@ async def auth(request):
         request.session.pop("user", None)
         return RedirectResponse(url='login')
     token = await google_auth().google.authorize_access_token(request)
-    print(f'token is :{token["id_token"]}')
     session_user = token.get('userinfo')
     if session_user:
         request.session['user'] = session_user
-        print(f'USER IS {session_user}')
         database_user = User()
         existing_user = await database_user.get_user(session_user['sub'])
-        print(existing_user)
         if existing_user:
             return RedirectResponse("/dashboard")
 
