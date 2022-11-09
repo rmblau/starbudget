@@ -22,21 +22,15 @@ class Users(Base):
         "Transaction", back_populates="user", uselist=False, cascade="all")
     categories = relationship(
         "Categories", back_populates="user", uselist=False, cascade="all")
+    income = relationship("Income", back_populates="income_amount", uselist=False)
 
-    def __init__(self, name, user_id, bank_balance, categories, first_login):
+    def __init__(self, name, user_id, bank_balance, income, categories, first_login):
         self.name = name
         self.user_id = user_id
         self.bank_balance = bank_balance
         self.categories = categories
+        self.income = income
         self.first_login = first_login
-
-
-# class Budget(Base):
-#    __tablename__ = 'userbudget'
-#    id = Column(Integer, primary_key=True, autoincrement=True)
-#    user_id = Column(BigInteger, ForeignKey("users.user_id"))
-#    categories = Column(String, ForeignKey(
-#        "categories.name", onupdate="cascade"))
 
 class Income(Base):
     __tablename__ = 'income'
@@ -45,10 +39,18 @@ class Income(Base):
     user_id = Column(String, ForeignKey(
         "users.user_id", name="fk_user_id"))
     amount = Column(Float)
+    source = Column(String)
+    date = Column(Date)
+    date_added = Column(String)
+    income_amount = relationship("Users", back_populates="income", uselist=False)
 
-    def __init__(self, user_id, amount):
+    def __init__(self, user_id, amount, source, date, date_added):
         self.user_id = user_id
         self.amount = amount
+        self.source = source
+        self.date = date
+        self.date_added = date_added
+       
 
 
 class Transaction(Base):
@@ -61,13 +63,14 @@ class Transaction(Base):
     recipient = Column(String)
     note = Column(String)
     date = Column(Date)
+    date_added = Column(String)
     user = relationship("Users", back_populates="transactions",
                         uselist=False, cascade="all")
     category = relationship(
         "Categories", back_populates="transaction", uselist=False)
     categories = Column(String, ForeignKey(
         "categories.name", onupdate="cascade"))
-    date_added = Column(String)
+    
 
     def __init__(self, amount, recipient, note, date, user_id, categories, date_added) -> None:
         self.amount = amount
@@ -85,12 +88,17 @@ class Categories(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, unique=True)
     user_id = Column(String, ForeignKey("users.user_id"))
-    transaction = relationship(
-        "Transaction", back_populates="category", uselist=False)
-    user = relationship("Users", back_populates="categories",
-                        uselist=False, cascade="all")
     balance = Column(Float)
+    transaction = relationship(
+        "Transaction", back_populates="category",uselist=False)
+   
+    user = relationship("Users", back_populates="categories",
+                        uselist=False, foreign_keys=[user_id], cascade="all")
+    hidden = Column(Boolean)
+    
 
-    def __init__(self, name, user_id):
+    def __init__(self, name, user_id, balance, hidden):
         self.name = name
         self.user_id = user_id
+        self.balance = balance
+        self.hidden = hidden

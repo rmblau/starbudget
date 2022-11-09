@@ -1,5 +1,5 @@
-var exampleModal = document.getElementById('renameModal')
-exampleModal.addEventListener('show.bs.modal', function (event) {
+var renameModal = document.getElementById('renameModal')
+renameModal.addEventListener('show.bs.modal', function (event) {
     // Button that triggered the modal
     var button = event.relatedTarget
     //var category = button.dataset.category
@@ -9,8 +9,8 @@ exampleModal.addEventListener('show.bs.modal', function (event) {
     // and then do the updating in a callback.
     //
     // Update the modal's content.
-    var modalTitle = exampleModal.querySelector('.modal-title')
-    var modalBodyInput = exampleModal.querySelector('.modal-body input')
+    var modalTitle = renameModal.querySelector('.modal-title')
+    var modalBodyInput = renameModal.querySelector('.modal-body input')
     modalTitle.textContent = 'Rename Category ' + category
     modalBodyInput.value = category
 })

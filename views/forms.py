@@ -1,10 +1,11 @@
+from unicodedata import category
 from starlette_wtf import StarletteForm
 from wtforms import StringField, DateField, SelectField, DecimalField, FieldList, SubmitField, HiddenField
 from wtforms.widgets import SubmitInput
-from wtforms.validators import DataRequired, InputRequired
+from wtforms.validators import DataRequired, InputRequired, NumberRange
 
 
-class CreateAccountForm(StarletteForm):
+class TransactionForm(StarletteForm):
     transaction = DecimalField(
         'Transaction amount',
         validators=[
@@ -68,8 +69,8 @@ class FirstLogin(StarletteForm):
         'Category Name',
         validators=[
             DataRequired('Category Name')
-        ]
-    )
+        ])
+    category_balance = DecimalField("Category Balance", validators=[DataRequired("Category Balance")])
 
 
 class BalanceForm(StarletteForm):
@@ -84,5 +85,11 @@ class BalanceForm(StarletteForm):
 class IncomeForm(StarletteForm):
     amount = DecimalField(
         "Income",
-        validators=[DataRequired("Income Amount")]
+        validators=[DataRequired("Income Amount"), NumberRange(min=0)]
     )
+    source = StringField("Source of income", validators=[DataRequired("Source")]
+    )
+    date = DateField('DatePicker',
+                                    validators=[DataRequired('Date')],
+                                    format="%Y-%m-%d"
+                                    )

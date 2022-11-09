@@ -2,8 +2,21 @@
 
  {% block content %}
   <body>
-
     <div class="row">
+        <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Remaining to be Budgeted</h5>
+        {% if income %}
+        <p class="card-text">{{ "%.2f"|format(balance) }}</p>
+        {% elif income <= 0.00 or income is none %}
+        <p class="card-text">{{ "%.2f"|format(balance) }}</p>
+        {% else %}
+        <p class="card-text"><a href="/first_login">Update balance</a></p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
   <div class="col-sm-6">
     <div class="card">
       <div class="card-body">
@@ -12,24 +25,8 @@
       </div>
     </div>
   </div>
-  <div class="col-sm-6">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Remaining Balance</h5>
-        {% if income %}
-        {% set bank_balance = (balance|float + income|float) - expenses|float %}
-        <p class="card-text">{{ "%.2f"|format(bank_balance) }}</p>
-        {% elif income <= 0.00 or income is none %}
-        {% set bank_balance = balance|float - expenses|float %}
-        <p class="card-text">{{ "%.2f"|format(bank_balance) }}</p>
-        {% else %}
-        <p class="card-text"><a href="/first_login">Update balance</a></p>
-        {% endif %}
-      </div>
-    </div>
-  </div>
 </div>
-<br></br>
+<br>
     <h1>Transactions</h1>
     <table class="table" id="transaction-table">
     
@@ -43,7 +40,7 @@
         <tr>
         {% for transaction in page.object_list %}
                 
-        <th scope="col"><a href="#" data-bs-toggle="modal" data-bs-target="#updateModal" data-bs-recipient="{{ transaction.recipient }}" data-bs-description="{{ transaction.note }}" data-bs-category="{{transaction.categories}}" data-bs-date="{{ transaction.date }}" data-bs-date-added="{{ transaction.date_added }}" data-bs-submit-time="{{ transaction.date_added }}" data-bs-amount="{{ transaction.amount }}" >{{ transaction.recipient }}</a></th>
+        <th scope="col"><a href="#" class="link-primary" data-bs-toggle="modal" data-bs-target="#updateModal" data-bs-recipient="{{ transaction.recipient }}" data-bs-description="{{ transaction.note }}" data-bs-category="{{transaction.categories}}" data-bs-date="{{ transaction.date }}" data-bs-date-added="{{ transaction.date_added }}" data-bs-submit-time="{{ transaction.date_added }}" data-bs-amount="{{ transaction.amount }}" >{{ transaction.recipient }}</a></th>
         <th scope="col">{{ "%.2f"|float(transaction.amount) }} </th>
         <th scope="col">{{ transaction.note }}
         <th scope="col">{{transaction.categories.split('~')[0]}}</th>  
@@ -56,15 +53,15 @@
 
 <div>
 {% if page.has_previous %}
-    <a class="button" href="?page=1">First</a>
-    <a class="button" href="?page={{ page.previous_page_number }}">Previous</a>
+    <a class="page-link" href="?page=1">First</a>
+    <a class="page-link" href="?page={{ page.previous_page_number }}">Previous</a>
 {% endif %}
 </div>
 <div>Page {{ page.number }} of {{ paginator.num_pages }} - {{ paginator.count }} record{% if paginator.count != 1 %}s{% endif %}</div>
 <div>
 {% if page.has_next %}
-    <a class="button" href="?page={{ page.next_page_number }}">Next</a>
-    <a class="button" href="?page={{ paginator.num_pages }}">Last</a>
+    <a class="page-link" href="?page={{ page.next_page_number }}">Next</a>
+    <a class="page-link" href="?page={{ paginator.num_pages }}">Last</a>
 {% endif %}
 </div>
 
@@ -81,7 +78,7 @@
       <div class="modal-body text-center">
         <form id="updateTransaction"action="/update_or_delete_transaction" method="post">
         <label for="old_recipient" class="col-form-label" hidden>Old Recipient:</label>
-        <input type="text" class="form-control" name="old_recipient" id="recipient" value="" form="updateTransaction"readonly required hidden>
+        <input type="text" class="form-control" name="old_recipient" id="old_recipient" value="" form="updateTransaction"readonly required hidden>
       <div class="modal-body text-center">
         <label for="oldname" class="col-form-label" hidden>Old Description:</label>
         <input type="text" class="form-control" name="oldname" id="oldname" value="" form="updateTransaction"readonly required hidden>
@@ -95,7 +92,7 @@
     </div>
     <div class="modal-body text-center">
      <label for="oldamount" class="col-form-label" hidden>Old Amount:</label>
-      <input type="text" class="form-control" name="oldamount" id="amount" form="updateTransaction" readonly required hidden>
+      <input type="text" class="form-control" name="oldamount" id="oldamount" form="updateTransaction" readonly required hidden>
     </div>
     <div class="form-group">
       <label for="date" class="col-form-label"hidden>Old Date:</label>
@@ -123,7 +120,7 @@
     </div>
     <div class="form-group">
                   <label for="category" class="col-form-label">Category:</label>
-                  <select id="category" class="form-control-sm" name="category" form="updateTransaction" required>
+                  <select id="category" class="form-control" name="category" form="updateTransaction" required>
                     {% for category in categories %}
                       <option value="{{ category }}">{{ category.split('~')[0] }}</option>
                     {% endfor %}

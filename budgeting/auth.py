@@ -2,7 +2,7 @@ from authlib.integrations.starlette_client import OAuth
 from starlette.config import Config
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
-from budgeting.user import User
+from budgeting.user import get_user_id
 
 templates = Jinja2Templates(directory='templates')
 
@@ -81,8 +81,7 @@ async def auth(request):
     session_user = token.get('userinfo')
     if session_user:
         request.session['user'] = session_user
-        database_user = User()
-        existing_user = await database_user.get_user(session_user['sub'])
+        existing_user = await get_user_id(session_user['sub'])
         if existing_user:
             return RedirectResponse("/dashboard")
 

@@ -1,11 +1,5 @@
-from starlette.routing import Route, Mount
-from starlette.middleware.authentication import AuthenticationMiddleware
-from starlette.middleware.sessions import SessionMiddleware
-from starlette.applications import Starlette
-from starlette.staticfiles import StaticFiles
-from views import views, transaction_view
+from starlette.routing import Route
 from budgeting import auth
-from budgeting.base import create_table
 
 
 routes = [

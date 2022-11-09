@@ -1,14 +1,16 @@
 aiofiles
 jinja2
 starlette
+sentry-sdk
 uvicorn
 gunicorn
 authlib
 WTForms
 starlette-wtf
+sentry_sdk
 aiosqlite
 asyncpg
+alembic
 httpx
 git+https://github.com/accent-starlette/starlette-core.git@master#egg=starlette-core
 sqlalchemy
-psycopg2

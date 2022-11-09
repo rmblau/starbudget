@@ -3,10 +3,10 @@
 <div class="container-fluid">
 <div class="container-fluid">
 <div class="col-md-12 text-center">
-<br></br>
+<br>
 <button class="btn btn-outline-primary btn-block btn-lg" href="#" data-bs-toggle="modal" data-bs-whatever="expenseModal"data-bs-target="#expenseModal" data-category="{{ category }}">Add expense</button>
 <button class="btn btn-outline-primary btn-block btn-lg" href="#" data-bs-toggle="modal" data-bs-whatever="incomeModal"data-bs-target="#incomeModal" data-category="{{ category }}">Add Income</button>
-<br></br>
+<br>
 <div class="modal fade" id="expenseModal" tabindex="-1" aria-labelledby="expenseModal" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -17,7 +17,9 @@
       <div class="modal-body">
         <form method="post" id="expenseForm" action="/response">
         <div class="form-group text-center">
-          {{ form.recipient(placeholder="Burger King") }}
+          <label for="recipient" class="col-form-label">Recipient:</label>
+          {{ form.recipient(placeholder="Burger King", class_="form-control") }}
+          <br>
           {% if form.recipient.errors -%}
           <span>{{ form.recipient.errors[0] }}</span>
           {%- endif %}
@@ -28,32 +30,35 @@
       {{ form.transaction(placeholder='$10',
                     autofocus='true',
                     type='textfield',
-                    spellcheck='false') }}
+                    spellcheck='false',
+                    class_="form-control") }}
       {% if form.transaction.errors -%}
       <span>{{ form.transaction.errors[0] }}</span>
       {%- endif %}
     </div>
     <div class="form-group text-center">
-      {{ form.note(placeholder="Dinner for two") }}
+      <label>Note: </label>
+      {{ form.note(placeholder="Dinner for two", class_="form-control") }}
       {% if form.note.errors -%}
       <span>{{ form.note.errors[0] }}</span>
       {%- endif %}
     </div>
     <div class="form-group text-center">
       <label>Date: </label>
-      {{ form.date_of_transaction() }}
+      {{ form.date_of_transaction(class_="form-control") }}
       {% if form.date_of_transaction.errors -%}
       <span>{{ form.date_of_transaction.errors[0] }}</span>
       {%- endif %}
     </div>
     <div class="form-group text-center">
-      {{ form.categories }}
+      <label>Category: </label>
+      {{ form.categories(class_="form-control") }}
       {% if form.categories.errors -%}
       <span>{{ form.categories.errors[0] }}</span>
       {%- endif %}
     </div>
         <div class="form-group text-center">
-      {{ form.date_added }}
+      {{ form.date_added(class_="form-control") }}
       {% if form.date_added.errors -%}
       <span>{{ form.date_added.errors[0] }}</span>
       {%- endif %}
@@ -79,9 +84,24 @@
       <div class="modal-body">
         <form method="post" id="expenseForm" action="/income_add_response">
         <div class="form-group text-center">
-          {{ income_form.amount(placeholder="$10") }}
+          <label>Source: </label>
+          {{ income_form.source(placeholder="Paycheck", class_="form-control") }}
+          {% if income_form.source.errors -%}
+          <span>{{ income_form.source.errors[0] }}</span>
+          {%- endif %}
+        </div>
+        <div class="form-group text-center">
+          <label>Amount: </label>
+          {{ income_form.amount(placeholder="$10", class_="form-control") }}
           {% if income_form.amount.errors -%}
           <span>{{ income_form.amount.errors[0] }}</span>
+          {%- endif %}
+        </div>
+        <div class="form-group text-center">
+          <label>Date: </label>
+          {{ income_form.date(placeholder="$10", class_="form-control") }}
+          {% if income_form.date.errors -%}
+          <span>{{ income_form.date.errors[0] }}</span>
           {%- endif %}
         </div>
     <br></br>
@@ -99,14 +119,9 @@
   <div class="col-sm-6">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">Current Balance</h5>
-        {% if income %}
-
-        {% set bank_balance = (balance|float + income|float) - expenses|float %}
-        <p class="card-text">{{ "%.2f"|format(bank_balance) }}</p>
-        {% elif income <= 0.00 or income is None %}
-        {% set bank_balance = balance|float - expenses|float %}
-        <p class="card-text">{{ "%.2f"|format(bank_balance) }}</p>
+        <h5 class="card-title ">Remaining to be Budgeted</h5>
+        {% if balance %}
+        <p class="card-text">{{ "%.2f"|format(balance) }}</p>
         {% else %}
         <p class="card-text"><a href="/first_login">Update balance</a></p>
         {% endif %}

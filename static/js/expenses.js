@@ -21,11 +21,11 @@ updateModal.addEventListener('show.bs.modal', function (event) {
     var newName = updateModal.querySelector('#newname');
     var dateInput = updateModal.querySelector('#date');
     var oldDate = updateModal.querySelector('#olddate');
-    var amountInput = updateModal.querySelector('#amount');
+    var amountInput = updateModal.querySelector('#oldamount');
     var newAmountInput = updateModal.querySelector('#newamount')
     var oldcategory = updateModal.querySelector('#old-category').value = category;
     var categoryInput = updateModal.querySelector('#category');
-    var receipientInput = updateModal.querySelector("#recipient");
+    var receipientInput = updateModal.querySelector("#old_recipient");
     var newRecipientInput = updateModal.querySelector('#newrecipient');
     var submitTimeInput = updateModal.querySelector('#submitTime').value = submitTime;
 
