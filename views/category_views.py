@@ -54,13 +54,13 @@ async def category_response(request):
     print(request.get("btnDetail"))
     print(f'button clicked is {button_click}')
     print(user)
-    data = await request.form()
-    print(f"DATA IS {data}")
 
     if 'sub' in user:
-        if 'btnrenameCategory' in data:
+        data = await request.form()
+        if 'btnRenameCategory' in data:
             print('rename found')
-            await category.update_category_name(data['newname'], data['oldname'], user['sub'])
+            print(data['newname'])
+            await category.update_category_name(new_name=data['newname'], old_name=data['oldname'], user_id=user['sub'])
         elif 'btnCategoryDetail' in data:
             print('detail found')
             category_data = await category.get_category_balance(f"{data['oldname']}~{user['sub']}", user['sub'])
@@ -68,9 +68,7 @@ async def category_response(request):
             return templates.TemplateResponse(template, context)
         else:
             print("Not found")
-        user_categories = [c.name for c in await category.get_user_categories(user['sub'])]
         print(f'data is {data}')
-        print(user_categories)
         return RedirectResponse('/categories')
     return RedirectResponse('/auth/login')
 

@@ -105,7 +105,7 @@
 </div>
 
 <!--Category Balance Modal-->
-<div class="modal fade" id="BalanceModal" tabindex="-1" aria-labelledby="CategoryModal" aria-hidden="true">
+<div class="modal fade" id="BalanceModal" tabindex="-1" aria-labelledby="BalanaceModal" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -114,11 +114,11 @@
       </div>
       <div class="modal-body">
         <form id="updateCategoryBalance"action="/update_category_balance" method="post">
-        <input type="hidden" class="form-control" name="oldname" id="oldname" value="" form="updateCategoryBalance"readonly>
+        <input type="hidden" class="form-control" name="oldbalance" id="oldbalance" value="" form="updateCategoryBalance"readonly>
       </div>
       <div class="modal-body text-center">
-        <label for="newname" class="col-form-label">New Balance:</label>
-         <input type="text" class="form-control" name="newname" id="newname" form="renameCategory">
+        <label for="newbalance" class="col-form-label">New Balance:</label>
+         <input type="text" class="form-control" name="newbalance" id="newbalance" form="renameCategory">
        </div>
       
     <div class="modal-footer">
