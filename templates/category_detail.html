@@ -7,8 +7,26 @@
     <div class="card">
       <div class="card-body">
         <h5 class="card-title ">Remaining in category</h5>
-        
-        <p class="card-text">{{ "%.2f"|format(amount_remaining) }}</p>
+          <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCategory" aria-expanded="false" aria-controls="collapseExample">
+              {{ amount_remaining }}
+    </div>
+  </button>
+    <div class="collapse" id="collapseCategory">
+     <form action="/update_category_balance/{{ category.split('~')[0] }}" id="createCategory" method="post" autocomplete="off">
+       <div class="form-group" form="createCategory">
+           <label class="col-form-label col-form-label-sm" for="balanceAmount">Category Balance</label>
+           <input class="form-control form-control-sm text-center w-30" type="hidden" name="oldbalanceAmount" id="oldCategoryBalance" value="{{ amount_remaining }}"form='createCategory' placeholder="{{ amount_remaining }}" title="Enter Balance" maxlength="10" required>
+           <label class="col-form-label col-form-label-sm" for="balanceAmount">Category Balance</label>
+           <input class="form-control form-control-sm text-center w-30" type="text" name="balanceAmount" id="balanceAmount" form='createCategory' placeholder="{{ amount_remaining }}" title="Enter Balance" maxlength="10" required>
+       </div>
+       <div>
+        <br></br>
+       <button type="submit" id="btnCreateCategory" name="btnCreateCategory" class="btn btn-success">Save</button>
+           <br></br>
+       </div>
+     </form>
+    </div>
+    </div>
       </div>
     </div>
   </div>
@@ -112,11 +130,33 @@
         <button class="btn btn-success" type="submit" name="btnUpdateTransaction" form="updateTransaction" value="Update">Update</button>
         <button class="btn btn-danger" type="submit" name="btnDeleteTransaction" form="updateTransaction" value="Delete">Delete</button>
     </div>
+      </div>
     </form>
     </div>
   </div>
 </div>
 </div>
-<script src=/static/js/expenses.js>
-</script>
+
+<!--Category Balance Modal-->
+<div class="modal fade" id="balanceModal" tabindex="-1" aria-labelledby="balanceModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="CategoryBalanceModal">Modal Category Balance title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="updateCategoryBalance"action="/update_category_balance/{{ category.split('~')[0] }}" method="post">
+        <input type="text" class="form-control" name="oldbalance" id="oldbalance" value="" form="updateCategoryBalance"readonly>
+            <label for="newbalance" class="col-form-label">New Balance:</label>
+                <input type="text" class="form-control" name="newbalance" id="newbalance" form="updateCategoryBalance">
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="submit" name="btnUpdateCategoryBalance" form="updateCategoryBalance">Delete</button>
+    </div></form>
+    </div>
+  </div>
+</div>
+</div>
+
+<script src=/static/js/expenses.js></script>
 {% endblock%}

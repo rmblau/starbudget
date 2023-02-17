@@ -4,7 +4,7 @@ renameModal.addEventListener('show.bs.modal', function (event) {
     var button = event.relatedTarget
     //var category = button.dataset.category
     // Extract info from data-bs-* attributes
-    var category = button.getAttribute('data-bs-whatever')
+    var category = button.getAttribute('data-bs-name')
     // If necessary, you could initiate an AJAX request here
     // and then do the updating in a callback.
     //
@@ -21,7 +21,7 @@ deleteModal.addEventListener('show.bs.modal', function (event) {
     var button = event.relatedTarget
     //var category = button.dataset.category
     // Extract info from data-bs-* attributes
-    var category = button.getAttribute('data-bs-whatever')
+    var category = button.getAttribute('data-bs-name')
     // If necessary, you could initiate an AJAX request here
     // and then do the updating in a callback.
     //
@@ -31,3 +31,4 @@ deleteModal.addEventListener('show.bs.modal', function (event) {
     modalTitle.textContent = 'Delete Category ' + category
     modalBodyInput.value = category
 })
+

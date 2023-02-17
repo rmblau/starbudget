@@ -1,14 +1,9 @@
 from datetime import date, datetime
-from unicodedata import category
 
 import sqlalchemy
-from budgeting import user
-
-from budgeting.categories import Categories
-from .database import Transaction, Income, Users, Categories as UserCategories
+from sqlalchemy import BigInteger, delete, select, update
+from .database import Transaction, Income, Categories as UserCategories
 from .base import Session
-from sqlalchemy import BigInteger, delete, insert, select, asc, func, update, insert
-from sqlalchemy.orm import selectinload
 
 
 async def last_five_transactions(user_id: BigInteger):
@@ -25,7 +20,7 @@ async def last_five_transactions(user_id: BigInteger):
 
 
 async def add_transaction(amount: float, recipient: str, note: str, date_of_transaction: datetime, user_id: BigInteger,
-                          categories: Categories, date_added: str) -> Transaction:
+                          categories: str, date_added: str) -> Transaction:
     async with Session() as session:
         transaction = Transaction(
             amount=float(amount), recipient=recipient, note=note, date=date_of_transaction, user_id=user_id,
@@ -36,7 +31,7 @@ async def add_transaction(amount: float, recipient: str, note: str, date_of_tran
 
 
 async def edit_transaction(amount: float, recipient: str, note: str, date_of_transactions: date, user_id: str,
-                           old_category_id: int, categories: str, submit_time: datetime):
+                           old_category_id: int, categories: str, submit_time: str):
     async with Session() as session:
         now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")
         updated_transaction = await session.execute(
@@ -48,7 +43,7 @@ async def edit_transaction(amount: float, recipient: str, note: str, date_of_tra
     return updated_transaction
 
 
-async def delete_transaction(user_id: BigInteger, old_category_id: int):
+async def delete_transaction(user_id: str, old_category_id: int):
     async with Session() as session:
         updated_transaction = await session.execute(
             delete(Transaction).where(Transaction.user_id == user_id).where(Transaction.id == old_category_id))
@@ -60,7 +55,6 @@ async def get_transaction_category(user_id):
     async with Session() as session:
         transaction = await session.execute(select(Transaction.categories).select_from(UserCategories).where(
             UserCategories.user_id == user_id).join(UserCategories.transaction))
-        # await session.execute(select(Income.amount).select_from(Users).where(user_id==user_id).limit(1).order_by(Income.id.desc()).join(Users.income))
         transaction_category = transaction.scalars().all()
         return transaction_category
 
@@ -72,14 +66,17 @@ async def get_transaction(user_id):
         transactions = transaction.scalars().all()
         return transactions
 
+
 async def get_transaction_by_category(user_id, category):
     async with Session() as session:
-        transaction = await session.execute(select(Transaction).where(Transaction.user_id == user_id).where(Transaction.categories == category).order_by(Transaction.date.asc()))
+        transaction = await session.execute(select(Transaction).where(Transaction.user_id == user_id).where(
+            Transaction.categories == category).order_by(Transaction.date.asc()))
         transactions = transaction.scalars().all()
         return transactions
 
-async def get_transaction_id(user_id, recipient: str, amount: float, note: str, date: datetime,
-                             category: Categories, submit_time: datetime):
+
+async def get_transaction_id(user_id, recipient: str, amount: float, note: str, date: date,
+                             category: str, submit_time: datetime):
     async with Session() as session:
         transaction = await session.execute(select(Transaction.id)
                                             .where(Transaction.user_id == user_id)
@@ -109,4 +106,3 @@ async def sum_of_income(user_id):
                 Income.user_id == user_id))
         income = income_amount.scalar()
         return income
-

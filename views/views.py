@@ -6,7 +6,9 @@ from starlette.responses import RedirectResponse, HTMLResponse
 from starlette.templating import Jinja2Templates
 from starlette_core.paginator import Paginator
 
-from budgeting.categories import Categories
+from budgeting.categories import (
+    create_category, get_category_transactions, get_all_user_categories
+)
 from budgeting.transaction import (
     last_five_transactions, 
     get_transaction,
@@ -33,7 +35,6 @@ async def homepage(request):
     return templates.TemplateResponse(template, context)
 
 async def first_login_response(request):
-    category = Categories()
     session_user = request.session.get("user")
 
     data = await request.form()
@@ -42,11 +43,10 @@ async def first_login_response(request):
         if first_login:
             print(session_user['sub'])
             await create_user(name=session_user['name'], user_id=session_user['sub'], categories=f'{"Uncategorized"}~{session_user["sub"]}', income=0.0, bank_balance=0.0, hidden=True)
-            await category.create_category(session_user['sub'], f"{data['categories']}", balance=data['category_balance'])
+            await create_category(session_user['sub'], f"{data['categories']}", balance=data['category_balance'])
             await update_first_login(session_user['sub'])
         else:
             await update_user(user_id=session_user['sub'], categories="Uncategorized", bank_balance=0.0)
-       # await category.create_category(session_user['sub'], f"{data['categories']}~{session_user['sub']}")
         await create_balance(session_user['sub'], (float(data['balance']) - float(data['category_balance'])))
 
     if 'id' in session_user:
@@ -57,7 +57,7 @@ async def first_login_response(request):
         else:
             await update_user(user_id=session_user['id'], categories="Uncategorized", bank_balance=0.0)
         await create_balance(session_user['id'], data['balance'])
-        await category.create_category(session_user['id'], data['category'])
+        await create_category(session_user['id'], data['category'])
     return RedirectResponse('/dashboard')
 
 
@@ -78,9 +78,8 @@ async def budget(request):
 
 
 async def render_budget(request, user_id):
-    category = Categories()
     transaction = await get_transaction(user_id)
-    categories = await category.get_all_user_categories(user_id=user_id)
+    categories = await get_all_user_categories(user_id=user_id)
     print(f'categories are {[c.name for c in categories]}')
     income = await sum_of_income(user_id)
     balance = await get_balance(user_id)
@@ -164,11 +163,10 @@ async def dashboard(request):
         env = Environment()
         env.loader = FileSystemLoader('./templates')
         template = env.get_template('dashboard.html')
-        category = Categories()
-        print(await category.get_category_transactions(f'Uncategorized~{session_user["sub"]}', session_user['sub']))
+        print(await get_category_transactions(f'Uncategorized~{session_user["sub"]}', session_user['sub']))
         form = await TransactionForm.from_formdata(request)
         income_form = await IncomeForm.from_formdata(request)
-        categories = await category.get_all_user_categories(session_user['sub'])
+        categories = await get_all_user_categories(session_user['sub'])
         if categories is not None:
             form.categories.choices = [
                 c.name.split('~')[0] for c in categories]

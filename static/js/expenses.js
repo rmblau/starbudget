@@ -14,7 +14,6 @@ updateModal.addEventListener('show.bs.modal', function (event) {
     // and then do the updating in a callback.
     //
     // Update the modal's content.
-    //let oldCategory = document.getElementById("oldcategory")
     var modalTitle = updateModal.querySelector('#modal-title');
     var modalBodyInput = updateModal.querySelector('.modal-body input');
     var oldName = updateModal.querySelector("#oldname");
@@ -41,5 +40,18 @@ updateModal.addEventListener('show.bs.modal', function (event) {
     categoryInput.value = category
     receipientInput.value = recipient
     newRecipientInput.value = recipient
-    //submitTimeInput.value = submitTime
+})
+
+var categoryBalance = document.getElementById('balanceModal')
+categoryBalance.addEventListener('show.bs.modal', function (event){
+    var button = event.relatedTarget
+    var balance = button.getAttribute('data-bs-remaining-balance');
+    console.log(balance)
+    var modalBodyInput = deleteModal.querySelector('.modal-body input')
+    modalBodyInput.value = balance
+    var modalTitle = deleteModal.querySelector('.modal-title')
+    modalTitle.textContent = 'Delete Category ' + balance
+    var oldBalance = updateModal.querySelector('#oldbalance');
+    oldBalance.value = balance
+
 })

@@ -94,7 +94,7 @@ async def sum_of_income(user_id: BigInteger):
         return user.scalar()
 
 
-async def add_income(user_id: BigInteger, amount: float, source: str, date: float, date_added: str) -> Income:
+async def add_income(user_id: BigInteger, amount: float, source: str, date: datetime, date_added: str) -> Income:
     async with Session() as session:
         income_amount = Income(user_id, amount, source, date, date_added)
         session.add(income_amount)

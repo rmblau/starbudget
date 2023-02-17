@@ -18,7 +18,7 @@
        <div class="form-group" form="createCategory">
            <label class="col-form-label col-form-label-sm" for="name">Category Name</label>
            <input class="form-control form-control-sm text-center w-30" type="text" name="category" id="name" form='createCategory' placeholder="e.g. Eating out" title="Please enter a name" maxlength="99" required>
-           <label class="col-form-label col-form-label-sm" for="balance">Category Balance</label>
+           <label class="col-form-label col-form-label-sm" for="balanceAmount">Category Balance</label>
            <input class="form-control form-control-sm text-center w-30" type="text" name="balance" id="balanceAmount" form='createCategory' placeholder="100.00" title="Enter Balance" maxlength="10" required>
        </div>
        <div>
@@ -40,9 +40,8 @@
                 <span class="sr-only">Toggle Dropdown</span>
               </button>
               <div class="dropdown-menu">
-                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-whatever="{{ category.split("~")[0] }}" data-bs-target="#renameModal" data-category={{ category }}>Rename</a></li>
-                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-whatever="{{ category.split("~")[0] }}" data-bs-target="#deleteModal" data-category="{{ category }}">Delete</a>  
-                <a class="dropdown-item" id="btnCategoryBalance"data-bs-toggle="modal" data-bs-whatever="{{ category.split("~")[0] }}" data-bs-target="#BalanceModal" data-category="{{ category }}">Update Category Balance</a>  
+                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-name="{{ category.split("~")[0] }}" data-bs-target="#renameModal" data-category={{ category }}>Rename</a></li>
+                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-name="{{ category.split("~")[0] }}" data-bs-target="#deleteModal" data-category="{{ category }}">Delete</a>
               </div>
             </div>
             <br></br>
@@ -59,7 +58,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <h5 class="modal-title" id="renameModalLabel">Modal title</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body text-center">
@@ -85,7 +84,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal Delete title</h5>
+        <h5 class="modal-title" id="DeleteModalLabel">Modal Delete title</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -104,31 +103,6 @@
 </div>
 </div>
 
-<!--Category Balance Modal-->
-<div class="modal fade" id="BalanceModal" tabindex="-1" aria-labelledby="BalanaceModal" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal Category Balance title</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="updateCategoryBalance"action="/update_category_balance" method="post">
-        <input type="hidden" class="form-control" name="oldbalance" id="oldbalance" value="" form="updateCategoryBalance"readonly>
-      </div>
-      <div class="modal-body text-center">
-        <label for="newbalance" class="col-form-label">New Balance:</label>
-         <input type="text" class="form-control" name="newbalance" id="newbalance" form="renameCategory">
-       </div>
-      
-    <div class="modal-footer">
-        <button class="btn btn-primary" type="submit" name="btnUpdateCategoryBalance" form="updateCategoryBalance">Delete</button>
-    </div>
-    </form> 
-    </div>     
-  </div>
-</div>
-</div>
 
 <script src=/static/js/renamemodal.js></script>
 

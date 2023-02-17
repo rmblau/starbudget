@@ -29,6 +29,7 @@ routes = [
     Route('/categories', category_views.categories, methods=["GET", "POST"]),
     Route('/create_category', category_views.create_category, methods=["GET", "POST"]),
     Route("/category_response", category_views.category_response, methods=["POST", "GET"]),
+    Route("/update_category_balance/{category:str}", category_views.update_category_balance_request, methods=['POST']),
     Route("/delete_category", category_views.delete_category, methods=["POST"]),
     Route("/category_detail/{category:str}", category_views.category_detail, methods=["GET", "POST"]),
     Route("/category_create", category_views.create_category_form,
@@ -57,7 +58,7 @@ sentry_sdk.init(
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
     # We recommend adjusting this value in production.
-    traces_sample_rate=1.0
+    traces_sample_rate=0.5
 )
 app = Starlette(debug=False,
                 routes=routes,

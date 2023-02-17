@@ -4,8 +4,8 @@
 <div class="container-fluid">
 <div class="col-md-12 text-center">
 <br>
-<button class="btn btn-outline-primary btn-block btn-lg" href="#" data-bs-toggle="modal" data-bs-whatever="expenseModal"data-bs-target="#expenseModal" data-category="{{ category }}">Add expense</button>
-<button class="btn btn-outline-primary btn-block btn-lg" href="#" data-bs-toggle="modal" data-bs-whatever="incomeModal"data-bs-target="#incomeModal" data-category="{{ category }}">Add Income</button>
+<button class="btn btn-outline-primary btn-block btn-lg" href="#" data-bs-toggle="modal" data-bs-name="expenseModal"data-bs-target="#expenseModal" data-category="{{ category }}">Add expense</button>
+<button class="btn btn-outline-primary btn-block btn-lg" href="#" data-bs-toggle="modal" data-bs-name="incomeModal"data-bs-target="#incomeModal" data-category="{{ category }}">Add Income</button>
 <br>
 <div class="modal fade" id="expenseModal" tabindex="-1" aria-labelledby="expenseModal" aria-hidden="true">
   <div class="modal-dialog">
@@ -17,7 +17,7 @@
       <div class="modal-body">
         <form method="post" id="expenseForm" action="/response">
         <div class="form-group text-center">
-          <label for="recipient" class="col-form-label">Recipient:</label>
+          <label class="col-form-label">Recipient:</label>
           {{ form.recipient(placeholder="Burger King", class_="form-control") }}
           <br>
           {% if form.recipient.errors -%}
@@ -27,7 +27,7 @@
     
     
       <div class="form-group text-center">
-      {{ form.transaction(placeholder='$10',
+      {{ form.transaction(placeholder='10',
                     autofocus='true',
                     type='textfield',
                     spellcheck='false',
@@ -37,7 +37,7 @@
       {%- endif %}
     </div>
     <div class="form-group text-center">
-      <label>Note: </label>
+      <label class="col-form-label">Note: </label>
       {{ form.note(placeholder="Dinner for two", class_="form-control") }}
       {% if form.note.errors -%}
       <span>{{ form.note.errors[0] }}</span>
