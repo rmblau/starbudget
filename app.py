@@ -18,14 +18,13 @@ routes = [
     Route("/", views.homepage, name="home", methods=["GET"]),
     Mount('/auth', routes=auth.routes),
     Route("/index", views.index, name="index", methods=["GET"]),
-    Route("/budget", views.budget, name="budget", methods=["GET", "POST"]),
+    Route("/transactions", views.budget, name="transactions", methods=["GET", "POST"]),
     Route("/transaction", transaction_view.transaction_add_form,
           name="transaction", methods=["GET", "POST"]),
     Route("/update_or_delete_transaction", transaction_view.update_or_delete_transaction,
           methods=['GET', 'POST']),
     Route("/response", transaction_view.add_transaction_response,
           name="response", methods=["POST"]),
-    Route("/income_add_response", transaction_view.income_add_response, methods=["POST"]),
     Route('/categories', category_views.categories, methods=["GET", "POST"]),
     Route('/create_category', category_views.create_category, methods=["GET", "POST"]),
     Route("/category_response", category_views.category_response, methods=["POST", "GET"]),
@@ -41,6 +40,7 @@ routes = [
     Route('/first_login_response',
           views.first_login_response, methods=["GET", "POST"]),
     Route('/income', views.income, methods=["GET", "POST"]),
+    Route("/income_add_response", transaction_view.income_add_response, methods=["POST"]),
     Route('/reports', views.reports, methods=["GET"]),
     Mount("/static", static, name="static")
 ]

@@ -4,14 +4,13 @@
 <div class="container-fluid">
 <div class="col-md-12 text-center">
 <br>
-<button class="btn btn-outline-primary btn-block btn-lg" href="#" data-bs-toggle="modal" data-bs-name="expenseModal"data-bs-target="#expenseModal" data-category="{{ category }}">Add expense</button>
-<button class="btn btn-outline-primary btn-block btn-lg" href="#" data-bs-toggle="modal" data-bs-name="incomeModal"data-bs-target="#incomeModal" data-category="{{ category }}">Add Income</button>
+<button class="btn btn-outline-primary btn-block btn-lg" href="#" data-bs-toggle="modal" data-bs-name="expenseModal"data-bs-target="#expenseModal" data-category="{{ category }}">Add transaction</button>
 <br>
 <div class="modal fade" id="expenseModal" tabindex="-1" aria-labelledby="expenseModal" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add expense</h5>
+        <h5 class="modal-title" id="expenseModalTitle">Add transaction</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -74,46 +73,6 @@
 </div>
 </div>
 
-<div class="modal fade" id="incomeModal" tabindex="-1" aria-labelledby="incomeModal" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add Income</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form method="post" id="expenseForm" action="/income_add_response">
-        <div class="form-group text-center">
-          <label>Source: </label>
-          {{ income_form.source(placeholder="Paycheck", class_="form-control") }}
-          {% if income_form.source.errors -%}
-          <span>{{ income_form.source.errors[0] }}</span>
-          {%- endif %}
-        </div>
-        <div class="form-group text-center">
-          <label>Amount: </label>
-          {{ income_form.amount(placeholder="$10", class_="form-control") }}
-          {% if income_form.amount.errors -%}
-          <span>{{ income_form.amount.errors[0] }}</span>
-          {%- endif %}
-        </div>
-        <div class="form-group text-center">
-          <label>Date: </label>
-          {{ income_form.date(placeholder="$10", class_="form-control") }}
-          {% if income_form.date.errors -%}
-          <span>{{ income_form.date.errors[0] }}</span>
-          {%- endif %}
-        </div>
-    <br></br>
-    <div class="text-center">
-    <button class="btn btn-outline-success me-2 text-center" type="submit">Add income</button>
-    </div>
-  </form>
- </div>
-</div>
-</div>
-</div>
-</div>
 
 <div class="row gx-5 gy-5">
   <div class="col-sm-6">
@@ -156,7 +115,7 @@
 <br></br>
 <div class="row">
 <div class="card"> 
-<h4 class="card-title text-center">Last 5 transactions</h4>
+<h4 class="card-title text-center">Last 5 transactions this month</h4>
 </div>
 </div>
 <div>
@@ -167,13 +126,15 @@
         <th>Amount</th>
         <th>Description</th>
         <th>Category</th>
+        <th>Date</th>
     </tr>
         <tr>
-        {% for recipient, amount, description, category_stripped in last_five %}
+        {% for recipient, amount, description, category_stripped, date in last_five %}
          <th scope="col">{{ recipient }} </th>
         <th scope="col">{{ amount }} </th>
         <th scope="col">{{ description }} </th>
         <th scope="col">{{ category_stripped }} </th>
+          <th scope="col">{{ date }} </th>
     </tr>
 </div>
 </div>

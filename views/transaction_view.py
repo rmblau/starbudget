@@ -11,6 +11,7 @@ from starlette.responses import RedirectResponse, HTMLResponse
 from budgeting.transaction import add_transaction, edit_transaction, get_transaction_id, delete_transaction
 from budgeting.user import get_balance, add_income, get_income, update_balance
 from views.forms import TransactionForm
+
 templates = Jinja2Templates(directory='templates')
 
 
@@ -45,30 +46,38 @@ async def add_transaction_response(request):
     print(f'data is {data}')
     if 'sub' in session_user:
         print(data)
-        
+
         now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         print(f'now is {now}')
         print(datetime.strptime(now, "%Y-%m-%d %H:%M:%S").date())
         print(await get_category_id(session_user['sub']))
         await add_transaction(amount=data['transaction'],
-                                          recipient=data['recipient'],
-                                          note=data['note'],
-                                          date_of_transaction=datetime.strptime(
-            data['date_of_transaction'], "%Y-%m-%d"),
-            user_id=session_user['sub'],
-            categories=data['categories'],
-            date_added=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f"))
+                              recipient=data['recipient'],
+                              note=data['note'],
+                              date_of_transaction=datetime.strptime(
+                                  data['date_of_transaction'], "%Y-%m-%d"),
+                              user_id=session_user['sub'],
+                              categories=data['categories'],
+                              date_added=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f"))
         bank_balance = await get_balance(session_user['sub'])
-        category_balance = await get_category_balance(f"{data['categories']}~{session_user['sub']}", session_user['sub'])
-        new_category_balance = category_balance - float(data['transaction'])
+        category_balance = await get_category_balance(f"{data['categories']}~{session_user['sub']}",
+                                                      session_user['sub'])
+        if data['categories'] != "Income":
+            print(f"{data['categories']}")
+            new_category_balance = category_balance - float(data['transaction'])
+            print(f'New is {new_category_balance=}')
+        else:
+            new_category_balance = category_balance + float(data['transaction'])
+            print(f'{new_category_balance=}')
         if new_category_balance < 0:
-            #this is a negative number so add to the balance
+            # this is a negative number so add to the balance
             new_balance = bank_balance + new_category_balance
             await update_balance(session_user['sub'], new_balance)
         print(f"new category balance {new_category_balance=}")
-        updated_category = await update_category_balance(f"{data['categories']}~{session_user['sub']}", session_user['sub'], new_category_balance)
+        updated_category = await update_category_balance(f"{data['categories']}~{session_user['sub']}",
+                                                         session_user['sub'], new_category_balance)
         print(f"{updated_category=}")
-    return RedirectResponse('/budget')
+    return RedirectResponse('/dashboard')
 
 
 async def update_or_delete_transaction(request):
@@ -129,14 +138,17 @@ async def update_or_delete_transaction(request):
                     str(session_user['sub']), int(transaction_id))
                 new_category_balance = category_balance + (float(data['oldamount']))
                 await update_category_balance(data['category'], session_user['sub'], new_category_balance)
-            return RedirectResponse("/budget")
+            return RedirectResponse("/transactions")
+
 
 async def income_add_response(request):
     session_user = request.session.get("user")
     data = await request.form()
     if 'sub' in session_user:
         print(f'{data=}')
-        await add_income(session_user['sub'], amount=float(data['amount']), source=data['source'], date=datetime.strptime(data['date'], "%Y-%m-%d"), date_added=datetime.today().strftime("%Y-%m-%d"))
+        await add_income(session_user['sub'], amount=float(data['amount']), source=data['source'],
+                         date=datetime.strptime(data['date'], "%Y-%m-%d"),
+                         date_added=datetime.today().strftime("%Y-%m-%d"))
         old_balance = await get_balance(user_id=session_user['sub'])
         print(old_balance)
         income = await get_income(session_user['sub'])

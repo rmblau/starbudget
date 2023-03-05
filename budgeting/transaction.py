@@ -1,22 +1,28 @@
-from datetime import date, datetime
-
+from datetime import date
+import datetime
 import sqlalchemy
+import calendar
 from sqlalchemy import BigInteger, delete, select, update
 from .database import Transaction, Income, Categories as UserCategories
 from .base import Session
 
 
 async def last_five_transactions(user_id: BigInteger):
+    now = datetime.datetime.now()
+    number_of_days = calendar.monthrange(now.year, now.month)[1]
+    first_of_month = now - datetime.timedelta(days=number_of_days)
     async with Session() as session:
         transaction = await session.execute(
-            select(Transaction).where(Transaction.user_id == user_id).limit(5).order_by(Transaction.date.desc()))
+            select(Transaction).where(Transaction.user_id == user_id).where(
+                Transaction.date.between(first_of_month, now)).limit(5).order_by(Transaction.date.desc()))
         transactions = transaction.scalars().all()
         recipient = [t.recipient for t in transactions]
         amount = [t.amount for t in transactions]
         description = [t.note for t in transactions]
         category = [t.categories for t in transactions]
         category_stripped = [c.split('~')[0] for c in category]
-        return recipient, amount, description, category_stripped
+        date = [d.date for d in transactions]
+        return recipient, amount, description, category_stripped, date
 
 
 async def add_transaction(amount: float, recipient: str, note: str, date_of_transaction: datetime, user_id: BigInteger,
@@ -33,7 +39,7 @@ async def add_transaction(amount: float, recipient: str, note: str, date_of_tran
 async def edit_transaction(amount: float, recipient: str, note: str, date_of_transactions: date, user_id: str,
                            old_category_id: int, categories: str, submit_time: str):
     async with Session() as session:
-        now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")
+        now = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")
         updated_transaction = await session.execute(
             update(Transaction).values(recipient=recipient, amount=float(amount), note=note,
                                        date=date_of_transactions, user_id=user_id, categories=categories,
@@ -94,7 +100,7 @@ async def sum_of_transactions(user_id):
     async with Session() as session:
         transaction = await session.execute(
             select(sqlalchemy.func.coalesce(sqlalchemy.func.sum(Transaction.amount), 0.00)).where(
-                Transaction.user_id == user_id))
+                Transaction.user_id == user_id).where(Transaction.categories != f"{'Income'}~{user_id}"))
         transactions = transaction.scalar()
         return transactions
 
@@ -102,7 +108,7 @@ async def sum_of_transactions(user_id):
 async def sum_of_income(user_id):
     async with Session() as session:
         income_amount = await session.execute(
-            select(sqlalchemy.func.coalesce(sqlalchemy.func.sum(Income.amount), 0.00)).where(
-                Income.user_id == user_id))
+            select(sqlalchemy.func.coalesce(sqlalchemy.func.sum(Transaction.amount), 0.00)).where(
+                Income.user_id == user_id).where(Transaction.categories == f"{'Income'}~{user_id}"))
         income = income_amount.scalar()
         return income

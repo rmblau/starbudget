@@ -1,5 +1,5 @@
 from datetime import datetime
-from budgeting.database import Users, Categories, Income
+from budgeting.database import Users, Categories, Income, Transaction
 from .base import Session
 import sqlalchemy
 from sqlalchemy import BigInteger, select, update
@@ -19,7 +19,7 @@ async def update_first_login(user_id):
         return first_login
 
 
-async def update_user(user_id, categories, bank_balance):
+async def update_user(user_id, categories, bank_balance, hidden=False):
     async with Session() as session:
         user = await session.execute(update(Users).where(Users.user_id == user_id).values(categories=categories,
                                                                                           bank_balance=float(
@@ -28,12 +28,16 @@ async def update_user(user_id, categories, bank_balance):
     return user
 
 
-async def create_user(name, user_id, categories, income, bank_balance=None, first_login=True, balance=0.0, hidden=False):
+async def create_user(name, user_id, categories, income, bank_balance=None, first_login=True, balance=0.0,
+                      hidden=False):
     async with Session() as session:
         user = Users(name=name, user_id=user_id,
-                     bank_balance=bank_balance, categories=Categories(categories, user_id, balance=balance, hidden=hidden),
-                     income=Income(user_id, income, source="first entry", date=datetime.strptime(datetime.today().strftime("%Y-%m-%d"), "%Y-%m-%d"),  date_added=datetime.today().strftime("%Y-%-m-%d")), first_login=first_login)
-                     
+                     bank_balance=bank_balance,
+                     categories=Categories(categories, user_id, balance=balance, hidden=hidden, income=False),
+                     income=Income(user_id, income, category="Income", source="first entry",
+                                   date=datetime.strptime(datetime.today().strftime("%Y-%m-%d"), "%Y-%m-%d"),
+                                   date_added=datetime.today().strftime("%Y-%-m-%d")), first_login=first_login)
+
         session.add(user)
         await session.commit()
     return user
@@ -85,13 +89,13 @@ async def get_income(user_id: BigInteger):
         return user.scalar()
 
 
-async def sum_of_income(user_id: BigInteger):
+async def sum_of_income(user_id):
     async with Session() as session:
-        user = await session.execute(
-            select(sqlalchemy.func.coalesce(sqlalchemy.func.sum(Income.amount), 0.00)).select_from(Users).where(
-                user_id == user_id).join(Users.income))
-        await session.commit()
-        return user.scalar()
+        income_amount = await session.execute(
+            select(sqlalchemy.func.coalesce(sqlalchemy.func.sum(Transaction.amount), 0.00)).where(
+                Income.user_id == user_id).where(Transaction.categories == f"{'Income'}~{user_id}"))
+        income = income_amount.scalar()
+        return income
 
 
 async def add_income(user_id: BigInteger, amount: float, source: str, date: datetime, date_added: str) -> Income:
@@ -107,4 +111,3 @@ async def set_balance(user_id: BigInteger, balance: float):
         balance = await session.execute(update(Users).where(Users.user_id == user_id).values(bank_balance=balance))
         await session.commit()
         return balance
-
