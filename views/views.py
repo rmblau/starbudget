@@ -12,7 +12,8 @@ from budgeting.categories import (
 from budgeting.transaction import (
     last_five_transactions,
     get_transaction,
-    sum_of_transactions
+    sum_of_transactions,
+    month_sum_of_transactions
 )
 
 from budgeting.user import (
@@ -189,6 +190,17 @@ async def dashboard(request):
         return templates.TemplateResponse(template, context=context)
     else:
         return RedirectResponse("auth/login")
+
+
+async def view_month_transactions(request):
+    session_user = request.session.get("user")
+    if session_user:
+        data = await  request.form()
+        print(data)
+        test = await month_sum_of_transactions(user_id=session_user, month='Mar')
+        template = "monthly-transactions.html"
+        context = {"request": request, "test": test}
+        return templates.TemplateResponse(template, context=context)
 
 
 async def reports(request):

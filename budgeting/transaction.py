@@ -9,8 +9,10 @@ from .base import Session
 
 async def last_five_transactions(user_id: BigInteger):
     now = datetime.datetime.now()
+    print(f'{now.month=}')
     number_of_days = calendar.monthrange(now.year, now.month)[1]
     first_of_month = now - datetime.timedelta(days=number_of_days)
+    print(f"{first_of_month=}")
     async with Session() as session:
         transaction = await session.execute(
             select(Transaction).where(Transaction.user_id == user_id).where(
@@ -104,7 +106,22 @@ async def sum_of_transactions(user_id):
         transactions = transaction.scalar()
         return transactions
 
-
+async def month_sum_of_transactions(user_id, month):
+    now = datetime.datetime.now()
+    month = datetime.datetime.strptime(month, '%b').month
+    print(f'{month=}')
+    print(now.year)
+    number_of_days = calendar.monthrange(now.year, month)[1]
+    print(number_of_days)
+    first_of_month = now - datetime.timedelta(days=number_of_days)
+    print(f"{first_of_month=}")
+    print(now)
+    async with Session() as session:
+        transaction = await session.execute(
+            select(sqlalchemy.func.coalesce(sqlalchemy.func.sum(Transaction.amount), 0.00)).where(
+                Transaction.user_id == user_id).where(Transaction.categories != f"{'Income'}~{user_id}").where(Transaction.date.between(first_of_month, now)))
+        transactions = transaction.scalar()
+        return transactions
 async def sum_of_income(user_id):
     async with Session() as session:
         income_amount = await session.execute(

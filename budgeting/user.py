@@ -60,7 +60,7 @@ async def get_user(user_id):
 async def update_balance(user_id: BigInteger, balance: float):
     async with Session() as session:
         bank_balance = await session.execute(
-            update(Users).values(bank_balance=balance).where(Users.user_id == user_id))
+            update(Users).values(bank_balance=float(balance)).where(Users.user_id == user_id))
         await session.commit()
         return bank_balance
 

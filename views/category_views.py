@@ -90,19 +90,18 @@ async def update_category_balance_request(request):
     category_name = f"{request.path_params['category']}"
     if 'sub' in user:
         data = await request.form()
-        print(f'DATA IS {data}')
         current_category_balance = await get_category_balance(f'{category_name}~{user["sub"]}', user["sub"])
-        print(f'{current_category_balance=}')
         if float(data['balanceAmount']) >= current_category_balance:
-
             balance = await get_balance(user["sub"])
             new_balance = balance - float(data['balanceAmount'])
-            print(new_balance)
             await update_balance(user["sub"], new_balance)
+        elif float(data['balanceAmount']) == 0:
+            balance = await get_balance(user['sub'])
+            new_balance = balance + current_category_balance
+            await update_balance(user['sub'], new_balance)
         else:
             balance = await get_balance(user["sub"])
             new_balance = balance + float(data['balanceAmount'])
-            print(new_balance)
             await update_balance(user["sub"], new_balance)
         await update_category_balance(category=f'{category_name}~{user["sub"]}', user_id=user['sub'], balance=data['balanceAmount'])
 
