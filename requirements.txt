@@ -28,7 +28,7 @@ six==1.16.0
 sniffio==1.3.0
 SQLAlchemy==1.4.42
 SQLAlchemy-Utils==0.38.3
-starlette==0.21.0
+starlette==0.25.0
 starlette-core @ git+https://github.com/accent-starlette/starlette-core.git@88e94be0cc65e457e32f2586a3c8860c6c08fca9
 Starlette-WTF==0.4.3
 typing==3.7.4.3
