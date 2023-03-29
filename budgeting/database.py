@@ -1,4 +1,4 @@
-
+import sqlalchemy
 from sqlalchemy import Boolean, Column, Float, ForeignKey, String, Integer, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import EncryptedType
@@ -16,7 +16,7 @@ class Users(Base):
     name = Column(EncryptedType(String, secret_key, AesEngine, 'pkcs5'))
 
     user_id = Column(EncryptedType(String, secret_key, AesEngine, 'pkcs5'), unique=True)
-    bank_balance = Column(EncryptedType(Float, secret_key, AesEngine, 'pkcs5'))
+    bank_balance = Column(EncryptedType(String, secret_key, AesEngine, 'pkcs5'))
     first_login = Column(Boolean)
     transactions = relationship(
         "Transaction", back_populates="user", uselist=False, cascade="all")
@@ -39,7 +39,7 @@ class Income(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(String, ForeignKey(
         "users.user_id", name="fk_user_id"))
-    amount = Column(Float)
+    amount = Column(String)
     source = Column(String)
     date = Column(Date)
     date_added = Column(String)

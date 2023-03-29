@@ -69,6 +69,7 @@ async def get_balance(user_id: BigInteger):
     async with Session() as session:
         bank_balance = await session.execute(select(Users.bank_balance).where(Users.user_id == user_id))
         balance = bank_balance.scalar()
+        print(f'{balance=}')
         return balance
 
 

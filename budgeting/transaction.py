@@ -2,6 +2,8 @@ from datetime import date
 import datetime
 import sqlalchemy
 import calendar
+
+from dateutil.relativedelta import relativedelta
 from sqlalchemy import BigInteger, delete, select, update
 from .database import Transaction, Income, Categories as UserCategories
 from .base import Session
@@ -11,8 +13,7 @@ async def last_five_transactions(user_id: BigInteger):
     now = datetime.datetime.now()
     print(f'{now.month=}')
     number_of_days = calendar.monthrange(now.year, now.month)[1]
-    first_of_month = now - datetime.timedelta(days=number_of_days)
-    print(f"{first_of_month=}")
+    first_of_month = datetime.datetime.today().replace(day=1) - datetime.timedelta(days=1)
     async with Session() as session:
         transaction = await session.execute(
             select(Transaction).where(Transaction.user_id == user_id).where(
@@ -24,6 +25,7 @@ async def last_five_transactions(user_id: BigInteger):
         category = [t.categories for t in transactions]
         category_stripped = [c.split('~')[0] for c in category]
         date = [d.date for d in transactions]
+        print(date)
         return recipient, amount, description, category_stripped, date
 
 
@@ -75,6 +77,21 @@ async def get_transaction(user_id):
         return transactions
 
 
+async def get_month_transaction(user_id, month):
+    now = datetime.datetime.now()
+    current_month = datetime.datetime.strptime(month, '%b').date().replace(year=now.year)
+    number_of_days = calendar.monthrange(now.year, now.month)[1]
+    first_of_month = current_month - datetime.timedelta(days=1)
+    print(f'{first_of_month=}')
+    last_day_of_month = current_month + relativedelta(day=number_of_days)
+    async with Session() as session:
+        transaction = await session.execute(
+            select(Transaction).where(Transaction.user_id == user_id).where(Transaction.date >= current_month)
+            .where(Transaction.date <= last_day_of_month).order_by(Transaction.date.asc()))
+        transactions = transaction.scalars().all()
+        return transactions
+
+
 async def get_transaction_by_category(user_id, category):
     async with Session() as session:
         transaction = await session.execute(select(Transaction).where(Transaction.user_id == user_id).where(
@@ -106,22 +123,27 @@ async def sum_of_transactions(user_id):
         transactions = transaction.scalar()
         return transactions
 
+
 async def month_sum_of_transactions(user_id, month):
     now = datetime.datetime.now()
-    month = datetime.datetime.strptime(month, '%b').month
+    current_month = datetime.datetime.strptime(month, '%b').date().replace(year=now.year)
+    print(f'{current_month=}')
+    number_of_days = calendar.monthrange(now.year, now.month)[1]
     print(f'{month=}')
-    print(now.year)
-    number_of_days = calendar.monthrange(now.year, month)[1]
-    print(number_of_days)
-    first_of_month = now - datetime.timedelta(days=number_of_days)
+    first_of_month = current_month - datetime.timedelta(days=1)
+    last_day_of_month = current_month + relativedelta(day=number_of_days)
     print(f"{first_of_month=}")
     print(now)
     async with Session() as session:
         transaction = await session.execute(
             select(sqlalchemy.func.coalesce(sqlalchemy.func.sum(Transaction.amount), 0.00)).where(
-                Transaction.user_id == user_id).where(Transaction.categories != f"{'Income'}~{user_id}").where(Transaction.date.between(first_of_month, now)))
+                Transaction.user_id == user_id).where(Transaction.categories != f"{'Income'}~{user_id}").where(
+                Transaction.date >= current_month).where(Transaction.date <= last_day_of_month))
         transactions = transaction.scalar()
-        return transactions
+        print(f'{transactions=}')
+        return round(transactions, 4)
+
+
 async def sum_of_income(user_id):
     async with Session() as session:
         income_amount = await session.execute(

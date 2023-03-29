@@ -91,7 +91,7 @@ async def update_category_balance_request(request):
     if 'sub' in user:
         data = await request.form()
         current_category_balance = await get_category_balance(f'{category_name}~{user["sub"]}', user["sub"])
-        if float(data['balanceAmount']) >= current_category_balance:
+        if Decimal(data['balanceAmount']) >= current_category_balance:
             balance = await get_balance(user["sub"])
             new_balance = balance - float(data['balanceAmount'])
             await update_balance(user["sub"], new_balance)

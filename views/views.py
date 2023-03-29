@@ -1,3 +1,7 @@
+import calendar
+from decimal import Decimal
+
+from babel.numbers import format_currency, format_decimal
 from datetime import datetime
 
 from jinja2 import FileSystemLoader
@@ -13,7 +17,7 @@ from budgeting.transaction import (
     last_five_transactions,
     get_transaction,
     sum_of_transactions,
-    month_sum_of_transactions
+    month_sum_of_transactions, get_month_transaction
 )
 
 from budgeting.user import (
@@ -90,16 +94,15 @@ async def render_budget(request, user_id):
     total_income = await sum_of_income(user_id)
     balance = await get_balance(user_id)
     total_expenses = await sum_of_transactions(user_id)
-    sum_of_transacations = await sum_of_transactions(user_id)
     # Show 10 transactions per page
     paginator = Paginator(transaction, 10)
     page_number = request.query_params.get("page", 1)
     page = paginator.get_page(page_number)
     template = "transactions.html"
     context = {"request": request, "paginator": paginator,
-               "page": page, "budget": budget, "sum": sum_of_transacations,
+               "page": page, "budget": budget,
                "categories": [c.name for c in categories],
-               "balance": balance, "expenses": total_expenses, "income": total_income
+               "balance": float(balance), "expenses": total_expenses, "income": total_income
                }
 
     return template, context
@@ -179,14 +182,14 @@ async def dashboard(request):
             form.categories.choices = ""
         income = await sum_of_income(session_user['sub'])
         balance = await get_balance(session_user['sub'])
-        low_balance = False
-        if balance < 10:
-            low_balance = True
         total_expenses = await sum_of_transactions(session_user['sub'])
+        print(f'{calendar.month_abbr[datetime.today().month]} is month')
+        monthly_spend = await month_sum_of_transactions(session_user['sub'], calendar.month_abbr[datetime.today().month])
         recipient, amount, description, category_stripped, date = await last_five_transactions(session_user['sub'])
         context = {"request": request, "categories": [c.name for c in categories], "income": income,
-                   "balance": balance, "last_five": zip(recipient, amount, description, category_stripped, date),
-                   "expenses": total_expenses, "form": form, "income_form": income_form, "low_balance": low_balance}
+                   "balance": float(balance), "last_five": zip(recipient, amount, description, category_stripped, date),
+                   "expenses": total_expenses, "monthly_spend": monthly_spend, "form": form, "income_form": income_form,
+                   }
         return templates.TemplateResponse(template, context=context)
     else:
         return RedirectResponse("auth/login")
@@ -195,11 +198,40 @@ async def dashboard(request):
 async def view_month_transactions(request):
     session_user = request.session.get("user")
     if session_user:
-        data = await  request.form()
-        print(data)
-        test = await month_sum_of_transactions(user_id=session_user, month='Mar')
+        data = await request.form()
+        if data.get("month") == "0":
+            month_number = calendar.month_abbr[datetime.today().month]
+        else:
+            month_number = data.get("month", calendar.month_abbr[datetime.today().month])
+        total_income = await sum_of_income(session_user['sub'])
+        categories = await get_all_user_categories(session_user['sub'])
+        balance = await get_balance(session_user['sub'])
+        expenses = await month_sum_of_transactions(user_id=session_user['sub'], month=month_number)
+        months = {"Jan": "January",
+                  "Feb": "February",
+                  "Mar": "March",
+                  "Apr": "April",
+                  "May": "May",
+                  "Jun": "June",
+                  "Jul": "July",
+                  "Aug": "August",
+                  "Sep": "September",
+                  "Oct": "October",
+                  "Nov": "November",
+                  "Dec": "December"
+                  }
+        full_month_name = months.get(data.get("month"), calendar.month_name[datetime.today().month])
         template = "monthly-transactions.html"
-        context = {"request": request, "test": test}
+        transaction = await get_month_transaction(session_user['sub'], month_number)
+        paginator = Paginator(transaction, 10)
+        page_number = request.query_params.get("page", 1)
+        page = paginator.get_page(page_number)
+        context = {"request": request, "paginator": paginator,
+                   "page": page, "budget": budget,
+                   "categories": [c.name for c in categories],
+                   "balance": float(balance), "expenses": expenses, "income": total_income,
+                   "month_name": full_month_name
+                   }
         return templates.TemplateResponse(template, context=context)
 
 

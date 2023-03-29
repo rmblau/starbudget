@@ -41,6 +41,7 @@ routes = [
           views.first_login_response, methods=["GET", "POST"]),
     Route('/income', views.income, methods=["GET", "POST"]),
     Route("/income_add_response", transaction_view.income_add_response, methods=["POST"]),
+    Route("/monthly-transactions", views.view_month_transactions, methods=['GET', 'POST']),
     Route('/reports', views.reports, methods=["GET"]),
     Mount("/static", static, name="static")
 ]
