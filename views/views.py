@@ -47,10 +47,10 @@ async def first_login_response(request):
         first_login = get_first_login(session_user['sub'])
         if first_login:
             await create_user(name=session_user['name'], user_id=session_user['sub'],
-                              categories=f'{"Uncategorized"}~{session_user["sub"]}', income=0.0, bank_balance=0.0,
+                              categories=f'{"Uncategorized"}~{session_user["sub"]}', bank_balance=0.0,
                               hidden=True)
             await create_category(session_user['sub'], f'{"Income"}', balance=0.0, hidden=True, income=True)
-            await create_category(session_user['sub'], f"{data['categories']}", balance=data['category_balance'])
+            await create_category(session_user['sub'], f"{data['categories']}", balance=float(data['category_balance']))
             await update_first_login(session_user['sub'])
         else:
             await update_user(user_id=session_user['sub'], categories="Uncategorized", bank_balance=0.0)
@@ -86,7 +86,6 @@ async def budget(request):
 async def render_budget(request, user_id):
     transaction = await get_transaction(user_id)
     categories = await get_all_user_categories(user_id=user_id)
-    total_income = await sum_of_income(user_id)
     balance = await get_balance(user_id)
     total_expenses = await sum_of_transactions(user_id)
     # Show 10 transactions per page
@@ -97,7 +96,7 @@ async def render_budget(request, user_id):
     context = {"request": request, "paginator": paginator,
                "page": page, "budget": budget,
                "categories": [c.name for c in categories],
-               "balance": float(balance), "expenses": total_expenses, "income": total_income
+               "balance": float(balance), "expenses": total_expenses
                }
 
     return template, context
@@ -171,12 +170,12 @@ async def dashboard(request):
                 c.name.split('~')[0] for c in categories]
         else:
             form.categories.choices = ""
-        income = await sum_of_income(session_user['sub'])
+        total_income = await sum_of_income(session_user['sub'])
         balance = await get_balance(session_user['sub'])
         total_expenses = await sum_of_transactions(session_user['sub'])
         monthly_spend = await month_sum_of_transactions(session_user['sub'], calendar.month_abbr[datetime.today().month])
         recipient, amount, description, category_stripped, date = await last_five_transactions(session_user['sub'])
-        context = {"request": request, "categories": [c.name for c in categories], "income": income,
+        context = {"request": request, "categories": [c.name for c in categories], "income": total_income,
                    "balance": float(balance), "last_five": zip(recipient, amount, description, category_stripped, date),
                    "expenses": total_expenses, "monthly_spend": monthly_spend, "form": form, "income_form": income_form,
                    }

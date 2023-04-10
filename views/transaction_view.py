@@ -9,7 +9,7 @@ from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, HTMLResponse
 
 from budgeting.transaction import add_transaction, edit_transaction, get_transaction_id, delete_transaction
-from budgeting.user import get_balance, add_income, get_income, update_balance
+from budgeting.user import get_balance, update_balance
 from views.forms import TransactionForm
 
 templates = Jinja2Templates(directory='templates')

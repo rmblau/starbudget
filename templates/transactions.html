@@ -7,13 +7,7 @@
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Remaining to be Budgeted</h5>
-        {% if income %}
         <p class="card-text">{{ "%.2f"|format(balance) }}</p>
-        {% elif income <= 0.00 or income is none %}
-        <p class="card-text">{{ "%.2f"|format(balance) }}</p>
-        {% else %}
-        <p class="card-text"><a href="/first_login">Update balance</a></p>
-        {% endif %}
       </div>
     </div>
   </div>

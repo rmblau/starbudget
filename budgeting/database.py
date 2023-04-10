@@ -22,41 +22,17 @@ class Users(Base):
         "Transaction", back_populates="user", uselist=False, cascade="all")
     categories = relationship(
         "Categories", back_populates="user", uselist=False, cascade="all")
-    income = relationship("Income", back_populates="income_amount", uselist=False)
 
-    def __init__(self, name, user_id, bank_balance, income, categories, first_login):
+    def __init__(self, name, user_id, bank_balance, categories, first_login):
         self.name = name
         self.user_id = user_id
         self.bank_balance = bank_balance
         self.categories = categories
-        self.income = income
         self.first_login = first_login
 
 
-class Income(Base):
-    __tablename__ = 'income'
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(EncryptedType(String, secret_key, AesEngine, 'pkcs5'), ForeignKey(
-        "users.user_id", name="fk_user_id"))
-    amount = Column(String)
-    source = Column(String)
-    date = Column(Date)
-    date_added = Column(String)
-    income_amount = relationship("Users", back_populates="income", uselist=False)
-    category = Column(String)
-
-    def __init__(self, user_id, amount, category, source, date, date_added):
-        self.user_id = user_id
-        self.amount = amount
-        self.category = category
-        self.source = source
-        self.date = date
-        self.date_added = date_added
-
-
 class Transaction(Base):
-    __tablename__ = 'expenses'
+    __tablename__ = 'transactions'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(EncryptedType(String, secret_key, AesEngine, 'pkcs5'), ForeignKey(
