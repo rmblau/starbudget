@@ -1,7 +1,7 @@
 import calendar
 from decimal import Decimal
 
-from babel.numbers import format_currency, format_decimal
+#from babel.numbers import format_currency, format_decimal
 from datetime import datetime
 
 from jinja2 import FileSystemLoader
@@ -42,12 +42,10 @@ async def homepage(request):
 
 async def first_login_response(request):
     session_user = request.session.get("user")
-
     data = await request.form()
     if 'sub' in session_user:
         first_login = get_first_login(session_user['sub'])
         if first_login:
-            print(session_user['sub'])
             await create_user(name=session_user['name'], user_id=session_user['sub'],
                               categories=f'{"Uncategorized"}~{session_user["sub"]}', income=0.0, bank_balance=0.0,
                               hidden=True)
@@ -73,9 +71,7 @@ async def first_login_response(request):
 
 async def budget(request):
     user = request.session.get("user")
-    print(user)
     data = await request.form()
-    print(data)
     if user is not None:
         if 'sub' in user:
             template, context = await render_budget(request, user['sub'])
@@ -90,7 +86,6 @@ async def budget(request):
 async def render_budget(request, user_id):
     transaction = await get_transaction(user_id)
     categories = await get_all_user_categories(user_id=user_id)
-    print(f'categories are {[c.name for c in categories]}')
     total_income = await sum_of_income(user_id)
     balance = await get_balance(user_id)
     total_expenses = await sum_of_transactions(user_id)
@@ -110,14 +105,11 @@ async def render_budget(request, user_id):
 
 async def index(request):
     user = request.session.get("user")
-    print(await budget.get_category_id(user['sub']))
-    print(user)
     if 'sub' in user:
         env = Environment()
         env.loader = FileSystemLoader('./templates')
         template = env.get_template('index.html')
         form = await CreateUserForm.from_formdata(request)
-        print(f'form categories are {form.categories}')
         html = template.render(form=form)
         return HTMLResponse(html)
     elif 'id' in user:
@@ -171,7 +163,6 @@ async def dashboard(request):
         env = Environment()
         env.loader = FileSystemLoader('./templates')
         template = env.get_template('dashboard.html')
-        print(await get_category_transactions(f'Uncategorized~{session_user["sub"]}', session_user['sub']))
         form = await TransactionForm.from_formdata(request)
         income_form = await IncomeForm.from_formdata(request)
         categories = await get_all_user_categories(session_user['sub'])
@@ -183,7 +174,6 @@ async def dashboard(request):
         income = await sum_of_income(session_user['sub'])
         balance = await get_balance(session_user['sub'])
         total_expenses = await sum_of_transactions(session_user['sub'])
-        print(f'{calendar.month_abbr[datetime.today().month]} is month')
         monthly_spend = await month_sum_of_transactions(session_user['sub'], calendar.month_abbr[datetime.today().month])
         recipient, amount, description, category_stripped, date = await last_five_transactions(session_user['sub'])
         context = {"request": request, "categories": [c.name for c in categories], "income": income,

@@ -71,8 +71,9 @@ app.add_middleware(SessionMiddleware, secret_key=''.join(
 
 if __name__ == "__main__":
     if config.get("ENVIRONMENT") == "LOCAL":
-        uvicorn.run(app, host="0.0.0.0", port=8000, ssl_keyfile="./localhost+3-key.pem",
-                    ssl_certfile="./localhost+3.pem")
+        # uvicorn.run(app, host="0.0.0.0", port=8000)
+        uvicorn.run(app, host="0.0.0.0", port=8000, ssl_keyfile="./key.pem",
+                    ssl_certfile="./cert.pem")
     else:
         uvicorn.run(app, host="0.0.0.0", port=8000,
                     ssl_keyfile="/etc/starbudget/live/starbudget.rmblau.com/privkey.pem",

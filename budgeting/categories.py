@@ -23,7 +23,6 @@ async def delete_category(name, user_id):
 
 
 async def get_category_balance(category, user_id) -> float:
-    print(f"{category=}")
     async with Session() as session:
         category_balance = await session.execute(
             select(UserCategories.balance).where(UserCategories.name == category).where(

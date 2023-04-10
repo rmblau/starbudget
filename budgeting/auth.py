@@ -40,7 +40,6 @@ def github_auth():
         api_base_url='https://api.github.com/',
         client_kwargs={'scope': 'user:email'},
     )
-    print(github_oauth._clients)
     return github_oauth
 
 
@@ -54,13 +53,11 @@ async def login(request):
 async def logout(request):
     request.session.clear()
     request.session['user'] = "Logged_out"
-    print(request.session)
     return RedirectResponse(url='/')
 
 
 async def github_login(request):
     request.session.clear()
-    print(request.session.get("user"))
     github = github_auth().github
     redirect_uri = request.url_for('github_auth')
     return await github.authorize_redirect(request, redirect_uri)
@@ -86,7 +83,6 @@ async def auth(request):
             return RedirectResponse("/dashboard")
 
         else:
-            print("no user found, redirecting to first_login")
             return RedirectResponse("/first_login")
     else:
 

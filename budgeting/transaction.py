@@ -11,7 +11,6 @@ from .base import Session
 
 async def last_five_transactions(user_id: BigInteger):
     now = datetime.datetime.now()
-    print(f'{now.month=}')
     number_of_days = calendar.monthrange(now.year, now.month)[1]
     first_of_month = datetime.datetime.today().replace(day=1) - datetime.timedelta(days=1)
     async with Session() as session:
@@ -25,7 +24,6 @@ async def last_five_transactions(user_id: BigInteger):
         category = [t.categories for t in transactions]
         category_stripped = [c.split('~')[0] for c in category]
         date = [d.date for d in transactions]
-        print(date)
         return recipient, amount, description, category_stripped, date
 
 
@@ -82,7 +80,6 @@ async def get_month_transaction(user_id, month):
     current_month = datetime.datetime.strptime(month, '%b').date().replace(year=now.year)
     number_of_days = calendar.monthrange(now.year, now.month)[1]
     first_of_month = current_month - datetime.timedelta(days=1)
-    print(f'{first_of_month=}')
     last_day_of_month = current_month + relativedelta(day=number_of_days)
     async with Session() as session:
         transaction = await session.execute(
@@ -127,20 +124,15 @@ async def sum_of_transactions(user_id):
 async def month_sum_of_transactions(user_id, month):
     now = datetime.datetime.now()
     current_month = datetime.datetime.strptime(month, '%b').date().replace(year=now.year)
-    print(f'{current_month=}')
     number_of_days = calendar.monthrange(now.year, now.month)[1]
-    print(f'{month=}')
     first_of_month = current_month - datetime.timedelta(days=1)
     last_day_of_month = current_month + relativedelta(day=number_of_days)
-    print(f"{first_of_month=}")
-    print(now)
     async with Session() as session:
         transaction = await session.execute(
             select(sqlalchemy.func.coalesce(sqlalchemy.func.sum(Transaction.amount), 0.00)).where(
                 Transaction.user_id == user_id).where(Transaction.categories != f"{'Income'}~{user_id}").where(
                 Transaction.date >= current_month).where(Transaction.date <= last_day_of_month))
         transactions = transaction.scalar()
-        print(f'{transactions=}')
         return round(transactions, 4)
 
 

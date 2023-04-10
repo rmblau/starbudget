@@ -23,7 +23,6 @@ async def categories(request):
         env.loader = FileSystemLoader('./templates')
         template = env.get_template('categories.html')
         categories = await get_unhidden_user_categories(user['sub'])
-        print(categories)
         form = await UpdateCategories.from_formdata(request)
         context = {"request": request, "categories":
             [c.name for c in categories], "balance": [c.balance for c in categories], "form": form}
@@ -34,7 +33,6 @@ async def create_category(request):
     user = request.session.get("user")
     data = await request.form()
     bank_balance = await get_balance(user['sub'])
-    print(f'data from the form is {data}')
     if 'sub' in user:
         await budgeting.categories.create_category(user['sub'], data['category'], balance=data['balance'])
         new_balance = bank_balance - float(data['balance'])
@@ -50,19 +48,13 @@ async def category_response(request):
     if 'sub' in user:
         data = await request.form()
         if 'btnRenameCategory' in data:
-            print(data)
-            print('rename found')
-            print(data['newname'])
             await update_category_name(new_name=data['newname'], old_name=data['oldname'], user_id=user['sub'])
         elif 'btnCategoryDetail' in data:
-            print('detail found')
             category_data = await get_category_balance(f"{data['oldname']}~{user['sub']}", user['sub'])
             context = {"request": request, "details": category_data}
             return templates.TemplateResponse(template, context)
         else:
-            print("Not found")
-        print(f'data is {data}')
-        return RedirectResponse('/categories')
+            return RedirectResponse('/categories')
     return RedirectResponse('/auth/login')
 
 
@@ -91,7 +83,7 @@ async def update_category_balance_request(request):
     if 'sub' in user:
         data = await request.form()
         current_category_balance = await get_category_balance(f'{category_name}~{user["sub"]}', user["sub"])
-        if Decimal(data['balanceAmount']) >= current_category_balance:
+        if float(data['balanceAmount']) >= current_category_balance:
             balance = await get_balance(user["sub"])
             new_balance = balance - float(data['balanceAmount'])
             await update_balance(user["sub"], new_balance)

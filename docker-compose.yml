@@ -1,3 +1,4 @@
+  GNU nano 5.4                                                                                                   docker-compose.yml
 version: '3.5'
 services:
   nginx:
@@ -51,3 +52,27 @@ services:
 
 networks:
   db: null
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
