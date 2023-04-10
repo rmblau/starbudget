@@ -5,7 +5,7 @@ import calendar
 
 from dateutil.relativedelta import relativedelta
 from sqlalchemy import BigInteger, delete, select, update
-from .database import Transaction, Income, Categories as UserCategories
+from .database import Transaction, Categories as UserCategories
 from .base import Session
 
 

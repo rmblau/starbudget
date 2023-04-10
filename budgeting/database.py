@@ -33,33 +33,11 @@ class Users(Base):
         self.first_login = first_login
 
 
-class Income(Base):
-    __tablename__ = 'income'
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(String, ForeignKey(
-        "users.user_id", name="fk_user_id"))
-    amount = Column(String)
-    source = Column(String)
-    date = Column(Date)
-    date_added = Column(String)
-    income_amount = relationship("Users", back_populates="income", uselist=False)
-    category = Column(String)
-
-    def __init__(self, user_id, amount, category, source, date, date_added):
-        self.user_id = user_id
-        self.amount = amount
-        self.category = category
-        self.source = source
-        self.date = date
-        self.date_added = date_added
-
-
 class Transaction(Base):
     __tablename__ = 'expenses'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(String, ForeignKey(
+    user_id = Column(EncryptedType(String, secret_key, AesEngine, 'pkcs5'), ForeignKey(
         "users.user_id", name="fk_user_id"))
     amount = Column(Float)
     recipient = Column(EncryptedType(String, secret_key, AesEngine, 'pkcs5'))

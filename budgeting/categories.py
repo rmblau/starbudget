@@ -1,6 +1,6 @@
 import sqlalchemy
 
-from .database import Categories as UserCategories, Income, Transaction
+from .database import Categories as UserCategories, Transaction
 from .base import Session
 from sqlalchemy.sql import Delete
 from sqlalchemy import select, update

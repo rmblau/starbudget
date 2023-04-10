@@ -1,5 +1,5 @@
 from datetime import datetime
-from budgeting.database import Users, Categories, Income, Transaction
+from budgeting.database import Users, Categories, Transaction
 from .base import Session
 import sqlalchemy
 from sqlalchemy import BigInteger, select, update
@@ -98,7 +98,7 @@ async def sum_of_income(user_id):
         return income
 
 
-async def add_income(user_id: BigInteger, amount: float, source: str, date: datetime, date_added: str) -> Income:
+async def add_income(user_id: BigInteger, amount: float, source: str, date: datetime, date_added: str):
     async with Session() as session:
         income_amount = Income(user_id, amount, source, date, date_added)
         session.add(income_amount)
