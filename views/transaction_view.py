@@ -117,7 +117,7 @@ async def update_or_delete_transaction(request):
                
                 await delete_transaction(
                     str(session_user['sub']), int(transaction_id))
-                new_category_balance = category_balance + (float(data['oldamount']))
+                new_category_balance = float(category_balance) + (float(data['oldamount']))
                 await update_category_balance(data['category'], session_user['sub'], new_category_balance)
             return RedirectResponse("/transactions")
 
