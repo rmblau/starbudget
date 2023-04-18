@@ -35,7 +35,7 @@ async def create_category(request):
     bank_balance = await get_balance(user['sub'])
     if 'sub' in user:
         await budgeting.categories.create_category(user['sub'], data['category'], balance=data['balance'])
-        new_balance = bank_balance - float(data['balance'])
+        new_balance = float(bank_balance) - float(data['balance'])
         await update_balance(user['sub'], new_balance)
         return RedirectResponse('/categories')
     return RedirectResponse("/auth/login")
@@ -108,7 +108,7 @@ async def delete_category(request):
     if 'sub' in user:
         category_balance = await get_category_balance(f"{data['oldname']}~{user['sub']}", user['sub'])
         bank_balance = await get_balance(user['sub'])
-        new_balance = bank_balance + category_balance
+        new_balance = float(bank_balance) + category_balance
         await budgeting.categories.delete_category(f"{data['oldname']}~{user['sub']}", user['sub'])
         await update_balance(user['sub'], new_balance)
         return RedirectResponse('/categories')

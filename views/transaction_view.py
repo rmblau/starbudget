@@ -114,9 +114,7 @@ async def update_or_delete_transaction(request):
                                                           category=data['old-category'],
                                                           submit_time=data['submitTime'])
 
-                bank_balance = await get_balance(session_user['sub'])
-                new_bank_balance = bank_balance + float(data['oldamount'])
-                await update_balance(session_user['sub'], new_bank_balance)
+               
                 await delete_transaction(
                     str(session_user['sub']), int(transaction_id))
                 new_category_balance = category_balance + (float(data['oldamount']))
