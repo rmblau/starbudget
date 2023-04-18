@@ -34,7 +34,7 @@ async def create_category(request):
     data = await request.form()
     bank_balance = await get_balance(user['sub'])
     if 'sub' in user:
-        await budgeting.categories.create_category(user['sub'], data['category'], balance=data['balance'])
+        await budgeting.categories.create_category(user['sub'], data['category'], balance=float(data['balance']))
         new_balance = float(bank_balance) - float(data['balance'])
         await update_balance(user['sub'], new_balance)
         return RedirectResponse('/categories')
