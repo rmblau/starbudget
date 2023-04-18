@@ -55,7 +55,9 @@ async def category_response(request):
             return templates.TemplateResponse(template, context)
         else:
             return RedirectResponse('/categories')
-    return RedirectResponse('/auth/login')
+    else:
+        return RedirectResponse('/auth/login')
+    return RedirectResponse('/categories')
 
 
 async def category_detail(request):
