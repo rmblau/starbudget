@@ -62,7 +62,7 @@ async def add_transaction_response(request):
             await update_balance(session_user['sub'], new_balance)
         if new_category_balance < 0:
             # this is a negative number so add to the balance
-            new_balance = bank_balance + new_category_balance
+            new_balance = float(bank_balance) + new_category_balance
             await update_balance(session_user['sub'], new_balance)
         updated_category = await update_category_balance(f"{data['categories']}~{session_user['sub']}",
                                                          session_user['sub'], new_category_balance)
