@@ -63,6 +63,8 @@ async def category_response(request):
 async def category_detail(request):
     user = request.session.get("user")
     template = "category_detail.html"
+    if user is None:
+        return RedirectResponse("auth/login")
     if 'sub' in user:
         category_detail = await get_category_balance(f"{request.path_params['category']}~{user['sub']}",
                                                      user['sub'])
@@ -72,6 +74,7 @@ async def category_detail(request):
         paginator = Paginator(category_transactions, 10)
         page_number = request.query_params.get("page", 1)
         page = paginator.get_page(page_number)
+        print(f'{request.path_params["category"]}')
         context = {"request": request, "categories": [c.name for c in categories], "amount_remaining": category_detail,
                    "category": f"{request.path_params['category']}~{user['sub']}",
                    "paginator": paginator,
@@ -79,27 +82,51 @@ async def category_detail(request):
         return templates.TemplateResponse(template, context)
 
 
+async def add_to_category_balance(amount, user_id, category_name):
+    balance = await get_balance(user_id)
+    current_category_balance = await get_category_balance(f'{category_name}~{user_id}', user_id)
+    amount_to_add = amount
+    new_category_balance = float(amount_to_add) + current_category_balance
+    new_balance = float(balance) - float(amount)
+    updated_category_balance = await update_category_balance(f'{category_name}~{user_id}', user_id, new_category_balance)
+    updated_balance = await update_balance(user_id, new_balance)
+    category_balance = await get_category_balance(category_name, user_id)
+    print(f"{category_balance=} in add function")
+    balance = await get_balance(user_id)
+    return category_balance, balance
+
+async def subtract_from_category_balance(amount, user_id, category_name):
+    balance = await get_balance(user_id)
+    current_category_balance = await get_category_balance(f'{category_name}~{user_id}', user_id)
+    new_category_balance = current_category_balance - float(amount)
+    new_balance = float(balance)  + float(amount)
+    updated_category_balance = await update_category_balance(f'{category_name}~{user_id}', user_id, new_category_balance)
+    category_balance = await get_category_balance(category_name, user_id)
+    updated_balance = await update_balance(user_id, new_balance)
+    balance = await get_balance(user_id)
+    return category_balance, balance
+
+async def move_to_category(amount, user_id, move_from, move_to):
+    cateogry_balance, balance = await subtract_from_category_balance(amount, user_id, f'{move_from}~{user_id}')
+    await add_to_category_balance(amount, user_id, f'{move_to}~{user_id}')
+
 async def update_category_balance_request(request):
     user = request.session.get("user")
     category_name = f"{request.path_params['category']}"
     if 'sub' in user:
         data = await request.form()
-        current_category_balance = await get_category_balance(f'{category_name}~{user["sub"]}', user["sub"])
-        if float(data['balanceAmount']) >= current_category_balance:
-            balance = await get_balance(user["sub"])
-            new_balance = balance - float(data['balanceAmount'])
-            await update_balance(user["sub"], new_balance)
-        elif float(data['balanceAmount']) == 0:
-            balance = await get_balance(user['sub'])
-            new_balance = balance + current_category_balance
-            await update_balance(user['sub'], new_balance)
-        else:
-            balance = await get_balance(user["sub"])
-            new_balance = balance + float(data['balanceAmount'])
-            await update_balance(user["sub"], new_balance)
-        await update_category_balance(category=f'{category_name}~{user["sub"]}', user_id=user['sub'], balance=data['balanceAmount'])
-
-        return RedirectResponse(f"/category_detail/{category_name}")
+        print(f'{data=}')
+        if 'btnUpdateTransaction' in data:
+            current_category_balance = await get_category_balance(f'{category_name}~{user["sub"]}', user["sub"])
+            category_balance, balance = await add_to_category_balance(data['balanceAmount'], user['sub'], category_name)
+            await update_category_balance(category_name, user['sub'], category_balance)
+            await update_balance(user['sub'], balance)
+        elif 'btnDeleteTransaction' in data:
+            current_category_balance = await get_category_balance(f'{category_name}~{user["sub"]}', user["sub"])
+            category_balance, balance = await subtract_from_category_balance(data['balanceAmount'], user['sub'], category_name)
+            await update_category_balance(category_name, user['sub'], category_balance)
+            await update_balance(user['sub'], balance)
+        return RedirectResponse(f"/{category_name}")
     return RedirectResponse("auth/login")
 
 

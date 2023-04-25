@@ -80,6 +80,7 @@ async def update_or_delete_transaction(request):
             date = datetime.strptime(
                 data['date'], "%Y-%m-%d").date()
             if 'btnUpdateTransaction' in data:
+                print(data)
                 transaction_id = await get_transaction_id(user_id=str(session_user['sub']),
                                                           recipient=str(data['old_recipient']),
                                                           amount=float(data['oldamount']),
@@ -100,9 +101,17 @@ async def update_or_delete_transaction(request):
                 if float(data['oldamount']) > float(data['newamount']):
                     new_category_balance = category_balance + (float(data['oldamount']) - float(data['newamount']))
                     await update_category_balance(data['category'], session_user['sub'], new_category_balance)
+                    if data['category'] == f'Income~{session_user["sub"]}':
+                        balance = await get_balance(session_user['sub'])
+                        new_balance = float(balance) - (float(data['oldamount']) - float(data['newamount']))
+                        await update_balance(session_user['sub'], new_balance)
                 else:
                     new_category_balance = category_balance - (float(data['newamount']) - float(data['oldamount']))
                     await update_category_balance(data['category'], session_user['sub'], new_category_balance)
+                    if data['category'] == f'Income~{session_user["sub"]}':
+                        balance = await get_balance(session_user['sub'])
+                        new_balance = float(balance) + (float(data['newamount']))
+                        await update_balance(session_user['sub'], new_balance)
 
             elif 'btnDeleteTransaction' in data:
                 category_balance = await get_category_balance(data['old-category'], session_user['sub'])

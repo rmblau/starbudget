@@ -29,8 +29,8 @@ routes = [
     Route('/create_category', category_views.create_category, methods=["GET", "POST"]),
     Route("/category_response", category_views.category_response, methods=["POST", "GET"]),
     Route("/update_category_balance/{category:str}", category_views.update_category_balance_request, methods=['POST']),
+    Route("/add_to_category_balance/{category:str}",category_views.add_to_category_balance, methods=["POST"]),
     Route("/delete_category", category_views.delete_category, methods=["POST"]),
-    Route("/category_detail/{category:str}", category_views.category_detail, methods=["GET", "POST"]),
     Route("/category_create", category_views.create_category_form,
           methods=["GET", "POST"]),
     Route('/balance', views.balance, methods=["GET", "POST"]),
@@ -43,7 +43,9 @@ routes = [
     Route("/income_add_response", transaction_view.income_add_response, methods=["POST"]),
     Route("/monthly-transactions", views.view_month_transactions, methods=['GET', 'POST']),
     Route('/reports', views.reports, methods=["GET"]),
-    Mount("/static", static, name="static")
+    Mount("/static", static, name="static"),
+    #put at bottom due to route prority rules
+    Route("/{category:str}", category_views.category_detail, methods=["GET", "POST"])
 ]
 
 
@@ -72,7 +74,7 @@ app.add_middleware(SessionMiddleware, secret_key=''.join(
 if __name__ == "__main__":
     if config.get("ENVIRONMENT") == "LOCAL":
         # uvicorn.run(app, host="0.0.0.0", port=8000)
-        uvicorn.run(app, host="0.0.0.0", port=8000, ssl_keyfile="./key.pem",
+        uvicorn.run(app, host="0.0.0.0", port=8001, ssl_keyfile="./key.pem",
                     ssl_certfile="./cert.pem")
     else:
         uvicorn.run(app, host="0.0.0.0", port=8000,

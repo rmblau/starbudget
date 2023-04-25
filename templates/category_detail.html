@@ -14,14 +14,14 @@
     <div class="collapse" id="collapseCategory">
      <form action="/update_category_balance/{{ category.split('~')[0] }}" id="createCategory" method="post" autocomplete="off">
        <div class="form-group" form="createCategory">
-           <label class="col-form-label col-form-label-sm" for="balanceAmount">Category Balance</label>
            <input class="form-control form-control-sm text-center w-30" type="hidden" name="oldbalanceAmount" id="oldCategoryBalance" value="{{ amount_remaining }}"form='createCategory' placeholder="{{ amount_remaining }}" title="Enter Balance" maxlength="10" required>
            <label class="col-form-label col-form-label-sm" for="balanceAmount">Category Balance</label>
            <input class="form-control form-control-sm text-center w-30" type="text" name="balanceAmount" id="balanceAmount" form='createCategory' placeholder="{{ amount_remaining }}" title="Enter Balance" maxlength="10" required>
        </div>
        <div>
         <br></br>
-       <button type="submit" id="btnCreateCategory" name="btnCreateCategory" class="btn btn-success">Save</button>
+        <button class="btn btn-success" type="submit" name="btnUpdateTransaction" form="createCategory" value="Update">Add</button>
+        <button class="btn btn-danger" type="submit" name="btnDeleteTransaction" form="createCategory" value="Delete">Subtract</button>
            <br></br>
        </div>
      </form>

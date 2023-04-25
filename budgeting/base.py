@@ -7,7 +7,7 @@ from sqlalchemy.sql.schema import MetaData
 import os
 config = Config(".env")
 engine = create_async_engine(
-    config.get('DATABASE_URL'), echo=False,)
+    config.get('LOCAL_DATABASE'), echo=False,)
 Session = sessionmaker(
     bind=engine, expire_on_commit=False, class_=AsyncSession)
 Base = declarative_base(class_registry=dict())
